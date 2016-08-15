@@ -1,0 +1,13 @@
+{ "provda.tests.sample" : {
+  "cod_in": "workdir/cod{acause}_{date}_{sex_id}.csv",
+  "risks_in": "workdir/risks{acause}_{date}_{sex_id}.hdf5",
+  "cod_out": "workdir/results{acause}_{date}_{sex_id}.hdf5",
+  "acause" : "heart attack",
+  "risk" : "smoking",
+  "sex_id" : 2,
+  "date" : "2016_03_07"
+},
+  "provda.tests.submodule" : {
+    "algorithm" : "steepest descent"
+  }
+}
