@@ -126,6 +126,9 @@ class Parameters(collections.Mapping):
     def outfile(self, role, *args, **kwargs):
         return self[role].format(*args, **kwargs)
 
+    def inoutfile(self, role, *args, **kwargs):
+        return self[role].format(*args, **kwargs)
+
     def __getitem__(self, name):
         """
         Mapping interface
@@ -137,7 +140,7 @@ class Parameters(collections.Mapping):
         elif self.parent is not None:
             return self.parent[name]
         else:
-            raise NoSuchParameter(name, "Could not find parameter to return")
+            raise KeyError(name)
 
     def __iter__(self):
         """
@@ -209,12 +212,80 @@ def output_database_table(template_string, **kw_replacements):
 
 ## Working with argparse.ArgumentParser
 
-def add_arguments(parser_group):
-    pass
+def add_arguments(parser):
+    parser.add_argument("--verbose", "-v", action="count")
+    parser.add_argument("--quiet", "-q", action="count")
+
+    parser_group=parser.add_argument_group("settings")
+    # These map from the name to the default value.
+    qualified_parameters = dict()
+    unqualified_parameters = dict()
+    nonunique = set()
+
+    for qualify, parameters in Parameters.manager.parameters_dict.items():
+        if isinstance(parameters, Parameters):
+            for name, value in parameters.items():
+                qualified_parameters["{}.{}".format(qualify, name)]=value
+                if name in unqualified_parameters:
+                    nonunique.add(name)
+                else:
+                    unqualified_parameters[name]=value
+        else:
+            pass # no parameters in PlaceHolder
+
+    reel_out = collections.OrderedDict()
+    reel_out.update({k : qualified_parameters[k]
+                     for k in sorted(qualified_parameters)})
+    reel_out.update({k : unqualified_parameters[k]
+                     for k in sorted(set(unqualified_parameters)-nonunique)})
+
+    for flag, default in reel_out.items():
+        if isinstance(default, int):
+            parser_group.add_argument("--{}".format(flag), type=int)
+        elif isinstance(default, float):
+            parser_group.add_argument("--{}".format(flag), type=float)
+        elif isinstance(default, basestring):
+            parser_group.add_argument("--{}".format(flag), type=str)
+        elif isinstance(default, bool):
+            parser_group.add_argument("--{}".format(flag), type=bool)
+        elif isinstance(default, collections.Iterable):
+            pass
+        elif isinstance(default, collections.Mapping):
+            pass
+        else:
+            logger.warn("Not sure what type {} is.".format(default))
 
 
-def namespace_settings(argparse_namespace):
-    pass
+def namespace_settings(args):
+    logger.debug("settings sent to provda {}".format(args))
+    level = logging.INFO
+    for flag, value in args.__dict__.items():
+        if flag == "q":
+            level = max(0, logging.WARNING + 5 * (args.q - 1))
+        elif flag == "v":
+            level = max(0, logging.DEBUG - 5 * (args.v + 1))
+
+        elif value is None:
+            continue
+
+        elif "." in flag:
+            split = flag.split(".")
+            parameters_name=".".join(split[:-1])
+            Parameters.manager.get_parameters(parameters_name)[split[-1]]=value
+
+        else:
+            unset = True
+            for q, parameters in Parameters.manager.parameters_dict.items():
+                if isinstance(parameters, Parameters):
+                    if flag in parameters:
+                        parameters.update({flag : value})
+                        unset = False
+                else:
+                    pass # no parameters in PlaceHolder
+            if unset:
+                pass # Can we check whether this was a user-specified param?
+
+    logging.basicConfig(level=level)
 
 
 ## Loading settings

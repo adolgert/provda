@@ -22,7 +22,7 @@ if __name__ == "__main__":
     provda.read_json(open("sample.settings"))
 
     parser = argparse.ArgumentParser(description="Testing provenance")
-    provda.add_arguments(parser.add_argument_group("settings"))
+    provda.add_arguments(parser)
     args = parser.parse_args()
     provda.namespace_settings(args)
 
