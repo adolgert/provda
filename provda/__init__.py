@@ -105,6 +105,46 @@ class Manager(object):
                 c.parent = aparameters
 
 
+class ChainedParametersIter(object):
+    """
+    Look in the dictionary of provda.tests.sample,
+    then look in the dictionary of provda.tests,
+    then provda, each time ignoring entries that
+    were in the previous one.
+    """
+    def __init__(self, parameters):
+        self.start = parameters
+        self.parameters = parameters
+        self.iter = iter(parameters._items)
+        self.seen = set()
+
+    def __iter__(self):
+        self.parameters = self.start
+        self.iter = iter(parameters._items)
+        self.seen = set()
+        return self
+
+    def next(self):
+        return self.__next__()
+
+    def __next__(self):
+        was_seen = True
+        return_value=None
+        while was_seen:
+            try:
+                return_value = next(self.iter)
+            except StopIteration:
+                self.parameters = self.parameters.parent
+                if self.parameters is not None:
+                    self.iter = iter(self.parameters._items)
+                    return_value = next(self.iter)
+                else:
+                    raise StopIteration
+            was_seen = next in self.seen
+        self.seen.add(return_value)
+        return return_value
+
+
 
 class Parameters(collections.Mapping):
     """
@@ -149,7 +189,7 @@ class Parameters(collections.Mapping):
         Mapping interface
         :return:
         """
-        return iter(self._items)
+        return ChainedParametersIter(self)
 
 
     def __len__(self):
@@ -347,13 +387,6 @@ def config_logging(args):
 
     :param args: This is a Namespace object returned by argparse.parse_args().
     """
-    if hasattr(args, "q"):
-        level = max(0, logging.WARNING + 5 * (args.q - 1))
-    elif hasattr(args, "v"):
-        level = max(0, logging.DEBUG - 5 * (args.v + 1))
-    else:
-        level = logging.INFO
-
     for qualified, parameters in Parameters.manager.parameters_dict.items():
         if not isinstance(parameters, PlaceHolder):
             if "loglevel" in parameters:
@@ -371,6 +404,16 @@ def config_logging(args):
                 pass # OK, so they don't set their log level. Inherited
         else:
             pass # PlaceHolder has nothing for us.
+
+    if hasattr(args, "quiet") and args.quiet is not None:
+        level = min(logging.CRITICAL, logging.WARNING + 5 * (args.quiet - 1))
+    elif hasattr(args, "verbose") and args.verbose is not None:
+        # level 0 is off, so 1 is the maximum.
+        level = max(1, logging.DEBUG - 5 * (args.verbose - 1))
+        print("level is {} args {}".format(level, args.verbose))
+    else:
+        level = logging.INFO
+    print("No level happened")
 
     sh = logging.StreamHandler()
     sh.setLevel(level)
