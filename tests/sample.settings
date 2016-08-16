@@ -9,5 +9,9 @@
 },
   "provda.tests.submodule" : {
     "algorithm" : "steepest descent"
+  },
+
+  "provda.tests" : {
+    "runlimit" : 10
   }
 }
