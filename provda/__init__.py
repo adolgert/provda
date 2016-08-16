@@ -118,6 +118,8 @@ class Parameters(collections.Mapping):
         self._items = dict()
 
     def update(self, settings_dict):
+        if "untracked" in settings_dict:
+            self._items.update(settings_dict["untracked"])
         self._items.update(settings_dict)
 
     def infile(self, role, *args, **kwargs):
@@ -302,6 +304,39 @@ def namespace_settings(args):
                 pass # Can we check whether this was a user-specified param?
 
     logging.basicConfig(level=level)
+
+
+def config_logging(args):
+    if hasattr(args, "q"):
+        level = max(0, logging.WARNING + 5 * (args.q - 1))
+    elif hasattr(args, "v"):
+        level = max(0, logging.DEBUG - 5 * (args.v + 1))
+    else:
+        level = logging.INFO
+
+    for qualified, parameters in Parameters.manager.parameters_dict.items():
+        if not isinstance(parameters, PlaceHolder):
+            if "loglevel" in parameters:
+                set_level = parameters["loglevel"]
+                if isinstance(set_level, basestring):
+                    int_level = getattr(logging, set_level.upper())
+                elif isinstance(set_level, int):
+                    int_level = set_level
+                else:
+                    raise Exception("Cannot interpret logging level {}".format(
+                        parameters["loglevel"]))
+
+                logging.getLogger(qualified).setLevel(int_level)
+            else:
+                pass # OK, so they don't set their log level. Inherited
+        else:
+            pass # PlaceHolder has nothing for us.
+
+    sh = logging.StreamHandler()
+    sh.setLevel(level)
+    formatter = logging.Formatter("MEMEME - %(message)s")
+    sh.setFormatter(formatter)
+    logging.getLogger().addHandler(sh)
 
 
 ## Loading settings

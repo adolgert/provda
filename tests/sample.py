@@ -6,7 +6,7 @@ import logging
 import argparse
 import provda
 
-
+logger = logging.getLogger("provda.tests.sample")
 parameters = provda.get_parameters("provda.tests.sample")
 
 
@@ -15,16 +15,23 @@ def transform_files(cds):
     print(parameters.infile("cod_in", **parameters))
     print(parameters.infile("risks_in", **parameters))
     print(parameters.outfile("cod_out", **parameters))
+    print("memory limit {} is untracked".format(parameters["memlimit"]))
+
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
     provda.read_json(open("sample.settings"))
 
     parser = argparse.ArgumentParser(description="Testing provenance")
     provda.add_arguments(parser)
     args = parser.parse_args()
     provda.namespace_settings(args)
+    provda.config_logging(args)
+
+    logger.debug("logger debug")
+    logger.info("logger info")
+    logger.warn("logger warn")
+    logger.error("logger error")
 
     transform_files((parameters["acause"], parameters["risk"],
                      parameters["sex_id"]))

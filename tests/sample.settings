@@ -5,8 +5,13 @@
   "acause" : "heart attack",
   "risk" : "smoking",
   "sex_id" : 2,
-  "date" : "2016_03_07"
-},
+  "date" : "2016_03_07",
+  "untracked" : {
+    "loglevel": "DEBUG",
+    "memlimit": 20
+    }
+  },
+
   "provda.tests.submodule" : {
     "algorithm" : "steepest descent"
   },
