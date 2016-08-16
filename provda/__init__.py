@@ -188,6 +188,15 @@ Parameters.manager = Manager(Parameters.root)
 
 
 def get_parameters(name=None):
+    """
+    Returns a Parameters object from an implicit hierarchy of them.
+
+    Works like loggers. You ask for provda.tests.sample,
+    and it inherits parameters from provda.tests.
+
+    :param name: A unicode or text name with dots to indicate hierarchy.
+    :return: A Parameters object, which behaves like a dictionary.
+    """
     if name:
         return Parameters.manager.get_parameters(name)
     else:
@@ -215,6 +224,22 @@ def output_database_table(template_string, **kw_replacements):
 ## Working with argparse.ArgumentParser
 
 def add_arguments(parser):
+    """
+    Adds arguments to an argparse.ArgumentParser from settings files.
+
+    Every setting in a settings file that is not a list or dictionary
+    is turned into a fully-qualified name as a command-line flag.
+    Those which are unique names are also turned into flags without
+    any qualification.
+
+    This also adds a --settings flag which can be used to read
+    settings files, in order, first to last, all of which are
+    applied before the command-line settings, no matter what
+    order those appear.
+
+    :param parser: This is an argparse.ArgumentParser.
+    :return:
+    """
     parser.add_argument("--verbose", "-v", action="count")
     parser.add_argument("--quiet", "-q", action="count")
     parser.add_argument("--settings", action="append")
@@ -260,6 +285,12 @@ def add_arguments(parser):
 
 
 def namespace_settings(args):
+    """
+    Sets settings from an argparse specification.
+
+    :param args: A Namespace object from argparse.parse_args.
+    :return:
+    """
     logger.debug("settings sent to provda {}".format(args))
     level = logging.INFO
     if "settings" in args.__dict__:
@@ -303,10 +334,19 @@ def namespace_settings(args):
             if unset:
                 pass # Can we check whether this was a user-specified param?
 
-    logging.basicConfig(level=level)
 
 
 def config_logging(args):
+    """
+    This reads the command line arguments, looks at settings files, and sets
+    logging.
+
+    It does a per-module logging settings using the untracked "loglevel"
+    parameter. Then it takes the -v  or -q from the command line
+    and sets an overall debug level.
+
+    :param args: This is a Namespace object returned by argparse.parse_args().
+    """
     if hasattr(args, "q"):
         level = max(0, logging.WARNING + 5 * (args.q - 1))
     elif hasattr(args, "v"):
@@ -334,7 +374,7 @@ def config_logging(args):
 
     sh = logging.StreamHandler()
     sh.setLevel(level)
-    formatter = logging.Formatter("MEMEME - %(message)s")
+    formatter = logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s")
     sh.setFormatter(formatter)
     logging.getLogger().addHandler(sh)
 
