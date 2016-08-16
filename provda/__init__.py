@@ -215,6 +215,7 @@ def output_database_table(template_string, **kw_replacements):
 def add_arguments(parser):
     parser.add_argument("--verbose", "-v", action="count")
     parser.add_argument("--quiet", "-q", action="count")
+    parser.add_argument("--settings", action="append")
 
     parser_group=parser.add_argument_group("settings")
     # These map from the name to the default value.
@@ -259,11 +260,26 @@ def add_arguments(parser):
 def namespace_settings(args):
     logger.debug("settings sent to provda {}".format(args))
     level = logging.INFO
+    if "settings" in args.__dict__:
+        if isinstance(args.settings, basestring):
+            with open(args.settings, "r") as settings_file:
+                read_json(settings_file)
+        elif isinstance(args.settings, collections.Iterable):
+            for fname in args.settings:
+                with open(fname, "r") as settings_file:
+                    read_json(settings_file)
+        else:
+            logger.error("Cannot interpret settings flag {}".format(
+                args.settings))
+
     for flag, value in args.__dict__.items():
         if flag == "q":
             level = max(0, logging.WARNING + 5 * (args.q - 1))
         elif flag == "v":
             level = max(0, logging.DEBUG - 5 * (args.v + 1))
+
+        elif flag == "settings":
+            continue # already handled
 
         elif value is None:
             continue

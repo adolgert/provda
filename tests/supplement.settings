@@ -1,0 +1,7 @@
+{ "provda.tests.sample" : {
+  "acause": "RESET",
+  "risk": "smoking",
+  "sex_id": 2,
+  "date": "2016_03_07"
+  }
+}
