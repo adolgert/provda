@@ -64,11 +64,13 @@ class Manager(object):
                     self.parameters_dict[name] = parameters_instance
                     self._fixup_children(place_holder, parameters_instance)
                     self._fixup_parents(parameters_instance)
+                    self._load_from_local_settings(name, parameters_instance)
             else:
                 parameters_instance = Parameters(name)
                 parameters_instance.manager = self
                 self.parameters_dict[name] = parameters_instance
                 self._fixup_parents(parameters_instance)
+                self._load_from_local_settings(name, parameters_instance)
         finally:
             _releaseLock()
         return parameters_instance
@@ -103,6 +105,15 @@ class Manager(object):
             if c.parent.name[:name_len] != name:
                 aparameters.parent = c.parent
                 c.parent = aparameters
+
+
+    def _load_from_local_settings(self, name, aparameters):
+        print(traceback.extract_stack(limit=4))
+        possible_settings = traceback.extract_stack(limit=4)[-2][0].replace(
+            ".py, ".settings")
+        if os.path.exists(possible_settings):
+            values = json.load(open(possible_settings, "r"))
+            aparameters.update(values)
 
 
 class ChainedParametersIter(object):
