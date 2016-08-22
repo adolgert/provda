@@ -20,6 +20,11 @@ logger = logging.getLogger("provda")
 # hierarchical value, which would be a module name.
 
 class NoSuchParameter(Exception):
+    """
+    Someone asked for a Parameter that isn't in the settings file.
+    There isn't a NoSuchParameters exception because every time
+    you ask for a parameter set it is created.
+    """
     def __init__(self, argument_name, message):
         self.argument_name = argument_name
         self.message = message
@@ -34,6 +39,11 @@ class NoSuchParameter(Exception):
 
 
 class PlaceHolder(object):
+    """
+    A Parameters object is scoped with module.submodule.subsubmodule.name.
+    If a Parameters object is created for "name" and the modules
+    above don't exist, this PlaceHolder stands in their place.
+    """
     def __init__(self, aparameters):
         self.parameters_map = { aparameters : None }
 
@@ -440,6 +450,14 @@ def read_json(stream):
     for (namespace, settings) in per_module_settings.items():
         get_parameters(namespace).update(settings)
 
+
+def add_provenance(filename):
+    """
+    This adds provenance information to a file.
+    :param stream_or_file:
+    :return:
+    """
+    pass # RFC 3339 for the dates.
 
 ## Threading to protect global hierarchy of parameters.
 

@@ -9,16 +9,28 @@ tables were read and written.
 ------------------------------------
 What problem are we trying to solve?
 ------------------------------------
-1. There are lots of constants in scripts. They represent
+1. Settings files let other programs (workflows) see and modify
+   the behavior of a script.
+
+   There are lots of constants in scripts. They represent
    easily-forgotten algorithmic choices, so we would like
    to make them visible. They change frequently, too, so
    they can give the impression the script changed when
    it did not.
-2. We want to run scripts and applications under a workflow.
+
+   We want to run scripts and applications under a workflow.
    Running under a workflow means we are not running interactively,
    and the command-line argument parsing is designed for
    interactive use. We'll effectively be using settings lists
    any way you look at it, so let's do it in a regular manner.
+
+2. Explicit provenance information about files and tables
+   can be collected over the network and stored with data.
+
+   There are lots of kinds of provenance, from tracking
+   individual function calls that happened to predicting
+   future database calls that will happen. We want to collect
+   data at the right level.
 
 
 --------------------------
