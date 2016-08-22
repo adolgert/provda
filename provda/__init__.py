@@ -53,6 +53,11 @@ class PlaceHolder(object):
 
 
 class Manager(object):
+    """
+    This is responsible for how Parameters objects fit together.
+
+    It creates and maintains the hierarchy of Parameters objects.
+    """
     def __init__(self, rootnode):
         self.root = rootnode
         self.parameters_dict = dict()
@@ -128,7 +133,8 @@ class Manager(object):
 
 class ChainedParametersIter(object):
     """
-    Look in the dictionary of provda.tests.sample,
+    This iterator will
+    look in the dictionary of provda.tests.sample,
     then look in the dictionary of provda.tests,
     then provda, each time ignoring entries that
     were in the previous one.
@@ -169,9 +175,14 @@ class ChainedParametersIter(object):
 
 class Parameters(collections.Mapping):
     """
-    Records which parameters are actually used.
+    A Parameters objects is a read-only map from
+    parameter names to parameter values.
 
+    It records which parameters are actually used.
     Inherits from the abstract base class for read-only dictionaries, Mapping.
+    It can be set at load time using ``load_json`` or
+    an ``update()`` method, but it won't let you
+    assign a value to a key directly.
     """
     def __init__(self, name):
         self.name = name
@@ -239,6 +250,10 @@ class Parameters(collections.Mapping):
 
 
 class RootParameters(Parameters):
+    """
+    This special parameters object always exists and is
+    named "root".
+    """
     def __init__(self):
         Parameters.__init__(self, "root")
 
@@ -248,7 +263,7 @@ Parameters.root = root
 Parameters.manager = Manager(Parameters.root)
 
 
-def get_parameters(name=None):
+def get_parameters(name=None, default_file=None):
     """
     Returns a Parameters object from an implicit hierarchy of them.
 
@@ -256,6 +271,7 @@ def get_parameters(name=None):
     and it inherits parameters from provda.tests.
 
     :param name: A unicode or text name with dots to indicate hierarchy.
+    :param default_file: The name of a file with a default set of settings.
     :return: A Parameters object, which behaves like a dictionary.
     """
     if name:
@@ -445,17 +461,27 @@ def config_logging(args):
 
 ## Loading settings
 def read_json(stream):
+    """
+    Read a json file which has parameters listed in sections
+    and populate the parameters dictionaries from those sections.
+
+    :param stream: A Python stream object, that is, ``f=open(filename, "r").``
+    :return: None
+    """
     per_module_settings=json.load(stream)
     logger.debug(per_module_settings)
     for (namespace, settings) in per_module_settings.items():
         get_parameters(namespace).update(settings)
 
 
-def add_provenance(filename):
+def add_provenance(filename, additional=None):
     """
     This adds provenance information to a file.
-    :param stream_or_file:
-    :return:
+    :param filename:
+        This function opens this file and closes it. That's not good
+        to do if the file is being modified by another command.
+    :param additional: A Mapping object (dict) of key-value pairs.
+    :return: None
     """
     pass # RFC 3339 for the dates.
 
