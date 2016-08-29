@@ -13,9 +13,22 @@ you would use logging.::
    import logging
    import provda
 
-   logger = logging.getLogger("provda.tests.sample",
-          "sample.settings")
-   parameters = provda.get_parameters("provda.tests.sample")
+    GLOBALS = {
+      "cod_in": "workdir/cod{acause}_{date}_{sex_id}.csv",
+      "risks_in": "workdir/risks{acause}_{date}_{sex_id}.hdf5",
+      "cod_out": "workdir/results{acause}_{date}_{sex_id}.hdf5",
+      "acause" : "heart attack",
+      "risk" : "smoking",
+      "sex_id" : 2,
+      "date" : "2016_03_07",
+      "untracked" : {
+        "loglevel": "DEBUG",
+        "memlimit": 20
+        }
+      }
+
+   logger = logging.getLogger("provda.tests.sample")
+   parameters = provda.get_parameters("provda.tests.sample", GLOBALS)
 
    def transform_files(causes):
       algorithm = parameters["algorithm"]

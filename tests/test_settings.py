@@ -15,3 +15,7 @@ class TestBasic(object):
         parameters = provda.get_parameters("provda.tests.sample")
         provda.read_json(open("sample.settings"))
         assert parameters["runlimit"]==10
+
+    def test_defaults(self):
+        import sample
+        assert sample.parameters["risk"] == "highdiving"

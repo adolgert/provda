@@ -7,6 +7,7 @@ each client Python module can have a local settings object.
 import collections
 import json
 import logging
+import yaml
 
 __all__ = [ "get_parameters", "namespace_settings", "read_json" ]
 
@@ -62,7 +63,7 @@ class Manager(object):
         self.root = rootnode
         self.parameters_dict = dict()
 
-    def get_parameters(self, name):
+    def get_parameters(self, name, default_dict=None):
         parameters_instance = None
         if not isinstance(name, basestring):
             raise TypeError("A parameters name must be string or unicode")
@@ -79,13 +80,16 @@ class Manager(object):
                     self.parameters_dict[name] = parameters_instance
                     self._fixup_children(place_holder, parameters_instance)
                     self._fixup_parents(parameters_instance)
-                    self._load_from_local_settings(name, parameters_instance)
             else:
                 parameters_instance = Parameters(name)
                 parameters_instance.manager = self
                 self.parameters_dict[name] = parameters_instance
                 self._fixup_parents(parameters_instance)
-                self._load_from_local_settings(name, parameters_instance)
+
+            if default_dict is not None:
+                parameters_instance.update(default_dict)
+            else:
+                pass # Nothing to load.
         finally:
             _releaseLock()
         return parameters_instance
@@ -121,14 +125,6 @@ class Manager(object):
                 aparameters.parent = c.parent
                 c.parent = aparameters
 
-
-    def _load_from_local_settings(self, name, aparameters):
-        print(traceback.extract_stack(limit=4))
-        possible_settings = traceback.extract_stack(limit=4)[-2][0].replace(
-            ".py, ".settings")
-        if os.path.exists(possible_settings):
-            values = json.load(open(possible_settings, "r"))
-            aparameters.update(values)
 
 
 class ChainedParametersIter(object):
@@ -218,8 +214,10 @@ class Parameters(collections.Mapping):
 
     def __iter__(self):
         """
-        Mapping interface
-        :return:
+        Mapping interface. Will find values in Parameters
+        objects which are above this one in the hierarchy.
+
+        :return: Iterator to dictionary of parameters.
         """
         return ChainedParametersIter(self)
 
@@ -230,6 +228,15 @@ class Parameters(collections.Mapping):
         :return:
         """
         return len(self._items)
+
+    def int(self, name):
+        return int(self.__getitem__(name))
+
+    def double(self, name):
+        return float(self.__getitem__(name))
+
+    def string(self, name):
+        return self.__getitem__(name)
 
 
     def get_child(self, suffix):
@@ -263,7 +270,7 @@ Parameters.root = root
 Parameters.manager = Manager(Parameters.root)
 
 
-def get_parameters(name=None, default_file=None):
+def get_parameters(name=None, default_dict=None):
     """
     Returns a Parameters object from an implicit hierarchy of them.
 
@@ -271,12 +278,14 @@ def get_parameters(name=None, default_file=None):
     and it inherits parameters from provda.tests.
 
     :param name: A unicode or text name with dots to indicate hierarchy.
-    :param default_file: The name of a file with a default set of settings.
+    :param default_dict: A dictionary of parameters to load.
     :return: A Parameters object, which behaves like a dictionary.
     """
     if name:
-        return Parameters.manager.get_parameters(name)
+        return Parameters.manager.get_parameters(name, default_dict)
     else:
+        if default_dict is not None:
+            root.update(default_dict)
         return root
 
 def input_file(template_string, **kw_replacements):
@@ -457,6 +466,34 @@ def config_logging(args):
     formatter = logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s")
     sh.setFormatter(formatter)
     logging.getLogger().addHandler(sh)
+
+
+def read(file_or_stream):
+    if issubclass(file_or_stream, basestring):
+        filename = file_or_stream
+        if filename.endswith(".yml"):
+            with open(filename, "r") as yaml_stream:
+                read_yaml(yaml_stream)
+        else:
+            with open(filename, "r") as json_stream:
+                read_jsonl(json_stream)
+    else:
+        read_json(file_or_stream)
+
+
+## Loading settings
+def read_yaml(stream):
+    """
+    Read a json file which has parameters listed in sections
+    and populate the parameters dictionaries from those sections.
+
+    :param stream: A Python stream object, that is, ``f=open(filename, "r").``
+    :return: None
+    """
+    per_module_settings = yaml.load(stream)
+    logger.debug(per_module_settings)
+    for (namespace, settings) in per_module_settings.items():
+        get_parameters(namespace).update(settings)
 
 
 ## Loading settings

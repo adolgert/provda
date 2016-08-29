@@ -6,8 +6,21 @@ import logging
 import argparse
 import provda
 
+
 logger = logging.getLogger("provda.tests.sample")
-parameters = provda.get_parameters("provda.tests.sample")
+parameters = provda.get_parameters("provda.tests.sample", {
+  "cod_in": "workdir/cod{acause}_{date}_{sex_id}.csv",
+  "risks_in": "workdir/risks{acause}_{date}_{sex_id}.hdf5",
+  "cod_out": "workdir/results{acause}_{date}_{sex_id}.hdf5",
+  "acause" : "heart attack",
+  "risk" : "highdiving",
+  "sex_id" : 1,
+  "date" : "2016_03_08",
+  "untracked" : {
+    "loglevel": "DEBUG",
+    "memlimit": 20
+    }
+  })
 
 
 def transform_files(cds):
