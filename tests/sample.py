@@ -4,11 +4,12 @@ that any way to fill in the templates will be used.
 """
 import logging
 import argparse
+import parameters
 import provda
 
 
 logger = logging.getLogger("provda.tests.sample")
-parameters = provda.get_parameters("provda.tests.sample", {
+param = parameters.get_parameters("provda.tests.sample", {
   "cod_in": "workdir/cod{acause}_{date}_{sex_id}.csv",
   "risks_in": "workdir/risks{acause}_{date}_{sex_id}.hdf5",
   "cod_out": "workdir/results{acause}_{date}_{sex_id}.hdf5",
@@ -24,16 +25,16 @@ parameters = provda.get_parameters("provda.tests.sample", {
 
 
 def transform_files(cds):
-    value = parameters["cod_in"]
-    print(parameters.infile("cod_in", **parameters))
-    print(parameters.infile("risks_in", **parameters))
-    print(parameters.outfile("cod_out", **parameters))
-    print("memory limit {} is untracked".format(parameters["memlimit"]))
+    value = param["cod_in"]
+    print(provda.input_file("cod_in", **param))
+    print(provda.input_file("risks_in", **param))
+    print(provda.output_file("cod_out", **param))
+    print("memory limit {} is untracked".format(param["memlimit"]))
 
 
 
 if __name__ == "__main__":
-    provda.read_json(open("sample.settings"))
+    parameters.read_json(open("sample.settings"))
 
     parser = argparse.ArgumentParser(description="Testing provenance")
     provda.add_arguments(parser)
@@ -46,5 +47,5 @@ if __name__ == "__main__":
     logger.warn("logger warn")
     logger.error("logger error")
 
-    transform_files((parameters["acause"], parameters["risk"],
-                     parameters["sex_id"]))
+    transform_files((param["acause"], param["risk"],
+                     param["sex_id"]))
