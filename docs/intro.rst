@@ -189,17 +189,17 @@ as being something you write outside the file. Plus, this
 means you have to import all of the imports this file needs
 in order to get at the settings.::
 
-    param = parameters.get_parameters("provda.tests.sample", {
-      "cod_in": path("workdir/cod{acause}_{date}_{sex_id}.csv", "in"),
-      "risks_in": path("workdir/risks{acause}_{date}_{sex_id}.hdf5", "in"),
-      "cod_out": path("workdir/results{acause}_{date}_{sex_id}.hdf5", "out"),
-      "acause" : cause("heart attack", "in"),
-      "risk" : risk("highdiving", "in"),
-      "sex_id" : sex(1, "in"),
-      "date" : date("2016_03_08", "in"),
+    param = provda.get_parameters("provda.tests.sample", {
+      "cod_in": provda.path("workdir/cod{acause}_{date}_{sex_id}.csv", "in"),
+      "risks_in": provda.path("workdir/risks{acause}_{date}_{sex_id}.hdf5", "in"),
+      "cod_out": provda.path("workdir/results{acause}_{date}_{sex_id}.hdf5", "out"),
+      "acause" : provda.cause("heart attack"),
+      "risk" : provda.risk("highdiving"),
+      "sex_id" : provda.sex(1),
+      "date" : provda.date("2016_03_08"),
       "untracked" : {
-        "loglevel": string("DEBUG"),
-        "memlimit": int(20)
+        "loglevel": provda.string("DEBUG"),
+        "memlimit": provda.int(20)
         }
       })
 
