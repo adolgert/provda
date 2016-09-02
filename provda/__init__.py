@@ -6,9 +6,9 @@ each client Python module can have a local settings object.
 """
 import collections
 import logging
-import parameters
+from . import parameters
+from .datatypes import int, double, string, path_template, cause, risk, sex
 
-__all__ = [ "get_parameters", "namespace_settings", "read_json" ]
 
 __author__ = "Andrew Dolgert <adolgert@uw.edu>"
 __status__ = "development"
@@ -50,6 +50,8 @@ def output_file(template_string, **kw_replacements):
 def output_database_table(template_string, **kw_replacements):
     # retrieve passwords
     return template_string.format(**kw_replacements)
+
+
 
 
 ## Working with argparse.ArgumentParser

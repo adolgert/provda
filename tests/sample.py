@@ -4,24 +4,11 @@ that any way to fill in the templates will be used.
 """
 import logging
 import argparse
-import parameters
 import provda
+from sample_cfg import param
 
 
 logger = logging.getLogger("provda.tests.sample")
-param = parameters.get_parameters("provda.tests.sample", {
-  "cod_in": "workdir/cod{acause}_{date}_{sex_id}.csv",
-  "risks_in": "workdir/risks{acause}_{date}_{sex_id}.hdf5",
-  "cod_out": "workdir/results{acause}_{date}_{sex_id}.hdf5",
-  "acause" : "heart attack",
-  "risk" : "highdiving",
-  "sex_id" : 1,
-  "date" : "2016_03_08",
-  "untracked" : {
-    "loglevel": "DEBUG",
-    "memlimit": 20
-    }
-  })
 
 
 def transform_files(cds):
@@ -34,7 +21,7 @@ def transform_files(cds):
 
 
 if __name__ == "__main__":
-    parameters.read_json(open("sample.settings"))
+    provda.read_json(open("sample.settings"))
 
     parser = argparse.ArgumentParser(description="Testing provenance")
     provda.add_arguments(parser)
