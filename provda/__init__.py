@@ -15,6 +15,24 @@ __status__ = "development"
 
 logger = logging.getLogger("provda")
 
+# These are forwards to the parameters module.
+def get_parameters(name=None, default_dict=None):
+    parameters.get_parameters(name, default_dict)
+
+def add_arguments(parser):
+    parameters.add_arguments(parser)
+
+def namespace_settings(args):
+    parameters.namespace_settings(args)
+
+def read_json(stream):
+    parameters.read_json(stream)
+
+def read(file_or_stream):
+    parameters.read(file_or_stream)
+
+
+
 def input_file(template_string, **kw_replacements):
     return template_string.format(**kw_replacements)
 
