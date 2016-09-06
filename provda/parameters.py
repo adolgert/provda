@@ -8,13 +8,14 @@ import collections
 import json
 import logging
 import yaml
+from .datatypes import Setting
 
 __all__ = [ "get_parameters", "namespace_settings", "read_json" ]
 
 __author__ = "Andrew Dolgert <adolgert@uw.edu>"
 __status__ = "development"
 
-logger = logging.getLogger("parameters")
+logger = logging.getLogger("provda.parameters")
 
 # Parameters behave like loggers in that there is a root
 # and sub-parameter sets, delineated by a period-separated
@@ -185,6 +186,12 @@ class Parameters(collections.Mapping):
         self.parent = None
         self._items = dict()
 
+    def __repr__(self):
+        return 'provda.Parameters("{}")'.format(self.name)
+
+    def __str__(self):
+        return self.__repr__()
+
     def update(self, settings_dict):
         if "untracked" in settings_dict:
             self._items.update(settings_dict["untracked"])
@@ -205,8 +212,16 @@ class Parameters(collections.Mapping):
         :param name:
         :return:
         """
+        logger.debug("getitem called for {}".format(name))
         if name in self._items:
-            return self._items[name]
+            retval = self._items[name]
+            logger.debug("name {} is type {} and value {}".format(
+                name, type(retval), retval
+            ))
+            if isinstance(retval, Setting):
+                return retval.value
+            else:
+                return retval
         elif self.parent is not None:
             return self.parent[name]
         else:
@@ -228,15 +243,6 @@ class Parameters(collections.Mapping):
         :return:
         """
         return len(self._items)
-
-    def int(self, name):
-        return int(self.__getitem__(name))
-
-    def double(self, name):
-        return float(self.__getitem__(name))
-
-    def string(self, name):
-        return self.__getitem__(name)
 
 
     def get_child(self, suffix):
@@ -316,7 +322,8 @@ def add_arguments(parser):
 
     for qualify, parameters in Parameters.manager.parameters_dict.items():
         if isinstance(parameters, Parameters):
-            for name, value in parameters.items():
+            for name in parameters:
+                value = parameters[name]
                 qualified_parameters["{}.{}".format(qualify, name)]=value
                 if name in unqualified_parameters:
                     nonunique.add(name)

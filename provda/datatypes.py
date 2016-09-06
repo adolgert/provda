@@ -12,29 +12,51 @@ class BadParameterType(Exception):
         self.target = target
         self.unmatched = unmatched
 
+class Setting(object): pass
 
-class int(object):
+class int(Setting):
     def __init__(self, value):
         try:
             self.value = __builtin__.int(value)
         except ValueError as e:
             raise BadParameterType("int", value)
+    def __repr__(self):
+        return "provda.int({})".format(self.value)
+    def __str__(self):
+        return str(self.value)
 
-class double(object):
+class double(Setting):
     def __init__(self, value):
         try:
             self.value = float(value)
         except ValueError as e:
             raise BadParameterType("float", value)
 
-class string(object):
+    def __repr__(self):
+        return "provda.int({})".format(self.value)
+
+
+    def __str__(self):
+        return str(self.value)
+
+
+class string(Setting):
     def __init__(self, value):
         try:
             self.value = str(value)
         except ValueError as e:
             raise BadParameterType("str", value)
 
-class path_template(object):
+
+    def __repr__(self):
+        return "provda.int({})".format(self.value)
+
+
+    def __str__(self):
+        return str(self.value)
+
+
+class path_template(Setting):
     def __init__(self, value, mode):
         try:
             self.value = str(value)
@@ -43,7 +65,16 @@ class path_template(object):
         assert mode in ["r", "w", "rw"]
         self.mode = mode
 
-class cause(object):
+
+    def __repr__(self):
+        return "provda.int({})".format(self.value)
+
+
+    def __str__(self):
+        return str(self.value)
+
+
+class cause(Setting):
     def __init__(self, value):
         try:
             self.value = str(value)
@@ -51,17 +82,42 @@ class cause(object):
             raise BadParameterType("cause", value)
 
 
-class risk(object):
+    def __repr__(self):
+        return "provda.int({})".format(self.value)
+
+
+    def __str__(self):
+        return str(self.value)
+
+
+class risk(Setting):
     def __init__(self, value):
         try:
             self.value = str(value)
         except ValueError as e:
             raise BadParameterType("risk", value)
 
-class sex(object):
+
+    def __repr__(self):
+        return "provda.int({})".format(self.value)
+
+
+    def __str__(self):
+        return str(self.value)
+
+
+class sex(Setting):
     def __init__(self, value):
         try:
             self.value = __builtin__.int(value)
             assert self.value in [1, 2, 3]
         except ValueError as e:
             raise BadParameterType("sex", value)
+
+
+    def __repr__(self):
+        return "provda.int({})".format(self.value)
+
+
+    def __str__(self):
+        return str(self.value)

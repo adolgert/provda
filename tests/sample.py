@@ -9,25 +9,33 @@ from sample_cfg import param
 
 
 logger = logging.getLogger("provda.tests.sample")
+#param = provda.get_parameters("provda.tests.sample")
 
 
 def transform_files(cds):
-    value = param["cod_in"]
-    print(provda.input_file("cod_in", **param))
-    print(provda.input_file("risks_in", **param))
-    print(provda.output_file("cod_out", **param))
+    print("type of param {}".format(type(param)))
+    print("cod_in is {}".format(param["cod_in"]))
+    print(provda.input_file(param["cod_in"], **param))
+    print(provda.input_file(param["risks_in"], **param))
+    print(provda.output_file(param["cod_out"], **param))
     print("memory limit {} is untracked".format(param["memlimit"]))
 
 
 
 if __name__ == "__main__":
-    provda.read_json(open("sample.settings"))
+    logging.basicConfig(level=logging.INFO)
+    handler = logging.StreamHandler()
+    handler.setLevel(logging.DEBUG)
+    # plog = logging.getLogger("provda")
+    # plog.addHandler(handler)
+    # plog.setLevel(logging.DEBUG)
+
+    print("param is {}".format(param))
 
     parser = argparse.ArgumentParser(description="Testing provenance")
     provda.add_arguments(parser)
     args = parser.parse_args()
     provda.namespace_settings(args)
-    provda.config_logging(args)
 
     logger.debug("logger debug")
     logger.info("logger info")

@@ -17,7 +17,7 @@ logger = logging.getLogger("provda")
 
 # These are forwards to the parameters module.
 def get_parameters(name=None, default_dict=None):
-    parameters.get_parameters(name, default_dict)
+    return parameters.get_parameters(name, default_dict)
 
 def add_arguments(parser):
     parameters.add_arguments(parser)
@@ -34,22 +34,30 @@ def read(file_or_stream):
 
 
 def input_file(template_string, **kw_replacements):
-    return template_string.format(**kw_replacements)
+    filename = template_string.format(**kw_replacements)
+    logger.info("Reading file {}".format(filename))
+    return filename
 
 
 def input_database_table(template_string, **kw_replacements):
     # You open a schema, not a set of tables. How to do this?
     # retrieve passwords
-    return template_string.format(**kw_replacements)
+    table = template_string.format(**kw_replacements)
+    logger.info("Reading table {}".format(table))
+    return table
 
 
 def output_file(template_string, **kw_replacements):
-    return template_string.format(**kw_replacements)
+    filename = template_string.format(**kw_replacements)
+    logger.info("Writing file {}".format(filename))
+    return filename
 
 
 def output_database_table(template_string, **kw_replacements):
     # retrieve passwords
-    return template_string.format(**kw_replacements)
+    table = template_string.format(**kw_replacements)
+    logger.info("Writing table {}".format(table))
+    return table
 
 
 
