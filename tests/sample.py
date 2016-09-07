@@ -19,6 +19,7 @@ def transform_files(cds):
     print(param["risks_in"])
     print(param["cod_out"])
     print("memory limit {} is untracked".format(param["memlimit"]))
+    print(param["list_of_stuff"])
 
 
 

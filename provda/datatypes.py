@@ -64,6 +64,30 @@ _vformat = FormatterMissing().vformat
 
 class Setting(object): pass
 
+class bool(Setting):
+    def __init__(self, value, tracked=True):
+        self.tracked = tracked
+        self.set(value)
+
+    def set(self, value):
+        try:
+            if value is not None:
+                self.value = __builtin__.bool(value)
+            else:
+                self.value = None
+        except ValueError as e:
+            raise BadParameterType("bool", value)
+
+    def get(self, mapping):
+        return self.value
+
+    def __repr__(self):
+        return "provda.bool({})".format(self.value)
+
+    def __str__(self):
+        return str(self.value)
+
+
 class int(Setting):
     def __init__(self, value, tracked=True):
         self.tracked = tracked

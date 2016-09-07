@@ -7,7 +7,8 @@ each client Python module can have a local settings object.
 import collections
 import logging
 from . import parameters
-from .datatypes import int, double, string, path_template, cause, risk, sex
+from .datatypes import bool, int, double, string
+from .datatypes import path_template, cause, risk, sex
 
 
 __author__ = "Andrew Dolgert <adolgert@uw.edu>"
