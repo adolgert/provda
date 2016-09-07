@@ -193,8 +193,6 @@ class Parameters(collections.Mapping):
         return self.__repr__()
 
     def update(self, settings_dict):
-        if "untracked" in settings_dict:
-            self._items.update(settings_dict["untracked"])
         self._items.update(settings_dict)
 
     def infile(self, role, *args, **kwargs):

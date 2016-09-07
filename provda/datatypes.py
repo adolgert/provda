@@ -15,9 +15,13 @@ class BadParameterType(Exception):
 class Setting(object): pass
 
 class int(Setting):
-    def __init__(self, value):
+    def __init__(self, value, tracked=True):
+        self.tracked = tracked
         try:
-            self.value = __builtin__.int(value)
+            if value is not None:
+                self.value = __builtin__.int(value)
+            else:
+                self.value = None
         except ValueError as e:
             raise BadParameterType("int", value)
     def __repr__(self):
@@ -25,15 +29,20 @@ class int(Setting):
     def __str__(self):
         return str(self.value)
 
+
 class double(Setting):
-    def __init__(self, value):
+    def __init__(self, value, tracked=True):
+        self.tracked = tracked
         try:
-            self.value = float(value)
+            if value is not None:
+                self.value = __builtin__.float(value)
+            else:
+                self.value = None
         except ValueError as e:
             raise BadParameterType("float", value)
 
     def __repr__(self):
-        return "provda.int({})".format(self.value)
+        return "provda.double({})".format(self.value)
 
 
     def __str__(self):
@@ -41,15 +50,19 @@ class double(Setting):
 
 
 class string(Setting):
-    def __init__(self, value):
+    def __init__(self, value, tracked=True):
+        self.tracked = tracked
         try:
-            self.value = str(value)
+            if value is not None:
+                self.value = __builtin__.str(value)
+            else:
+                self.value = None
         except ValueError as e:
             raise BadParameterType("str", value)
 
 
     def __repr__(self):
-        return "provda.int({})".format(self.value)
+        return "provda.string({})".format(self.value)
 
 
     def __str__(self):
@@ -57,9 +70,13 @@ class string(Setting):
 
 
 class path_template(Setting):
-    def __init__(self, value, mode):
+    def __init__(self, value, mode, tracked=True):
+        self.tracked = tracked
         try:
-            self.value = str(value)
+            if value is not None:
+                self.value = __builtin__.str(value)
+            else:
+                self.value = None
         except ValueError as e:
             raise BadParameterType("path_template", value)
         assert mode in ["r", "w", "rw"]
@@ -67,7 +84,7 @@ class path_template(Setting):
 
 
     def __repr__(self):
-        return "provda.int({})".format(self.value)
+        return "provda.path_template({})".format(self.value)
 
 
     def __str__(self):
@@ -75,15 +92,19 @@ class path_template(Setting):
 
 
 class cause(Setting):
-    def __init__(self, value):
+    def __init__(self, value, tracked=True):
+        self.tracked = tracked
         try:
-            self.value = str(value)
+            if value is not None:
+                self.value = __builtin__.str(value)
+            else:
+                self.value = None
         except ValueError as e:
             raise BadParameterType("cause", value)
 
 
     def __repr__(self):
-        return "provda.int({})".format(self.value)
+        return "provda.cause({})".format(self.value)
 
 
     def __str__(self):
@@ -91,15 +112,19 @@ class cause(Setting):
 
 
 class risk(Setting):
-    def __init__(self, value):
+    def __init__(self, value, tracked=True):
+        self.tracked = tracked
         try:
-            self.value = str(value)
+            if value is not None:
+                self.value = __builtin__.str(value)
+            else:
+                self.value = None
         except ValueError as e:
             raise BadParameterType("risk", value)
 
 
     def __repr__(self):
-        return "provda.int({})".format(self.value)
+        return "provda.risk({})".format(self.value)
 
 
     def __str__(self):
@@ -107,16 +132,20 @@ class risk(Setting):
 
 
 class sex(Setting):
-    def __init__(self, value):
+    def __init__(self, value, tracked=True):
+        self.tracked = tracked
         try:
-            self.value = __builtin__.int(value)
-            assert self.value in [1, 2, 3]
+            if value is not None:
+                self.value = __builtin__.int(value)
+                assert self.value in [1, 2, 3]
+            else:
+                self.value = None
         except ValueError as e:
             raise BadParameterType("sex", value)
 
 
     def __repr__(self):
-        return "provda.int({})".format(self.value)
+        return "provda.sex({})".format(self.value)
 
 
     def __str__(self):

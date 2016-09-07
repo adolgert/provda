@@ -42,5 +42,5 @@ if __name__ == "__main__":
     logger.warn("logger warn")
     logger.error("logger error")
 
-    transform_files((param["acause"], param["risk"],
+    transform_files((param["acause"], param["date"],
                      param["sex_id"]))
