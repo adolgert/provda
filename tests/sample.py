@@ -15,9 +15,9 @@ logger = logging.getLogger("provda.tests.sample")
 def transform_files(cds):
     print("type of param {}".format(type(param)))
     print("cod_in is {}".format(param["cod_in"]))
-    print(provda.input_file(param["cod_in"], **param))
-    print(provda.input_file(param["risks_in"], **param))
-    print(provda.output_file(param["cod_out"], **param))
+    print(param["cod_in"])
+    print(param["risks_in"])
+    print(param["cod_out"])
     print("memory limit {} is untracked".format(param["memlimit"]))
 
 
@@ -31,11 +31,14 @@ if __name__ == "__main__":
     # plog.setLevel(logging.DEBUG)
 
     print("param is {}".format(param))
-
     parser = argparse.ArgumentParser(description="Testing provenance")
+    print("-------------------1")
     provda.add_arguments(parser)
+    print("-------------------2")
     args = parser.parse_args()
+    logger.debug("About to parse namespace")
     provda.namespace_settings(args)
+    logger.debug("Parsed namespace")
 
     logger.debug("logger debug")
     logger.info("logger info")

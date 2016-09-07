@@ -88,7 +88,7 @@ class Manager(object):
                 self._fixup_parents(parameters_instance)
 
             if default_dict is not None:
-                parameters_instance.update(default_dict)
+                parameters_instance.init(default_dict)
             else:
                 pass # Nothing to load.
         finally:
@@ -192,8 +192,16 @@ class Parameters(collections.Mapping):
     def __str__(self):
         return self.__repr__()
 
-    def update(self, settings_dict):
+    def init(self, settings_dict):
         self._items.update(settings_dict)
+
+    def update(self, settings_dict):
+        logger.debug("parameters.update {}".format(settings_dict))
+        for flag, raw_value in settings_dict.items():
+            if flag in self._items:
+                self._items[flag].set(raw_value)
+            else:
+                raise KeyError()
 
     def infile(self, role, *args, **kwargs):
         return self[role].format(*args, **kwargs)
@@ -217,7 +225,10 @@ class Parameters(collections.Mapping):
                 name, type(retval), retval
             ))
             if isinstance(retval, Setting):
-                return retval.value
+                rv = retval.get(self)
+                if rv is None:
+                    raise KeyError(name)
+                return rv
             else:
                 return retval
         elif self.parent is not None:
@@ -321,7 +332,10 @@ def add_arguments(parser):
     for qualify, parameters in Parameters.manager.parameters_dict.items():
         if isinstance(parameters, Parameters):
             for name in parameters:
-                value = parameters[name]
+                try:
+                    value = parameters[name]
+                except KeyError:
+                    value = "None"
                 qualified_parameters["{}.{}".format(qualify, name)]=value
                 if name in unqualified_parameters:
                     nonunique.add(name)
@@ -384,13 +398,20 @@ def namespace_settings(args):
         elif "." in flag:
             split = flag.split(".")
             parameters_name=".".join(split[:-1])
-            Parameters.manager.get_parameters(parameters_name)[split[-1]]=value
+            undotted = split[-1]
+            logger.debug("Setting {} to {}".format(undotted, value))
+            Parameters.manager.get_parameters(parameters_name).update(
+                { undotted : value })
 
         else:
+            logger.debug("else flag {} value {}".format(flag, value))
             unset = True
             for q, parameters in Parameters.manager.parameters_dict.items():
                 if isinstance(parameters, Parameters):
-                    if flag in parameters:
+                    logger.debug("looking for {} in {}".format(flag, q))
+                    if flag in parameters._items:
+                        logger.debug("Setting {} to {} in {}".format(
+                            flag, value, q))
                         parameters.update({flag : value})
                         unset = False
                 else:
