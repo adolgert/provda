@@ -179,6 +179,7 @@ class path_template(Setting):
         assert mode in ["r", "w", "rw"]
         self.mode = mode
         self.set(value)
+        self._computed = None
 
     def set(self, value):
         try:
@@ -196,7 +197,9 @@ class path_template(Setting):
         :return: the path_template itself.
         """
         if self.value is not None:
-            self.value = _vformat(self.value, [], mapping)
+            self._computed = _vformat(self.value, [], mapping)
+            logging.debug("path_template {} {}".format(
+                self.value, self._computed))
             return self
         else:
             return self
@@ -205,7 +208,10 @@ class path_template(Setting):
         return "provda.path_template({})".format(self.value)
 
     def __str__(self):
-        return str(self.value)
+        if self._computed is not None:
+            return str(self._computed)
+        else:
+            return str(self.value)
 
 
 class cause(Setting):
