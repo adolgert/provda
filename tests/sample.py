@@ -13,6 +13,7 @@ logger = logging.getLogger("provda.tests.sample")
 
 
 def transform_files(cds):
+    print("sex_id is {}".format(param["sex_id"]))
     print("type of param {}".format(type(param)))
     print("cod_in is {}".format(param["cod_in"]))
     print(param["cod_in"])

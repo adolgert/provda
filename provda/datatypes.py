@@ -42,6 +42,9 @@ class FormatterMissing(string.Formatter):
                 # given the field_name, find the object it references
                 #  and the argument it came from
                 try:
+                    logger.debug("FormatterMissing.get_field name {}".format(
+                            field_name
+                    ))
                     obj, arg_used = self.get_field(field_name, args, kwargs)
                     if obj is None:
                         raise KeyError
@@ -103,6 +106,11 @@ class int(Setting):
             raise BadParameterType("int", value)
 
     def get(self, mapping):
+        """
+        An atomic type in the dictionary looks like the atomic type itself.
+        :param mapping: This is a Parameters instance.
+        :return: An int.
+        """
         return self.value
 
     def __repr__(self):
@@ -182,10 +190,16 @@ class path_template(Setting):
             raise BadParameterType("path_template", value)
 
     def get(self, mapping):
+        """
+        A non-atomic type in the mapping returns the object.
+        :param mapping: A Parameters instance.
+        :return: the path_template itself.
+        """
         if self.value is not None:
-            return _vformat(self.value, [], mapping)
+            self.value = _vformat(self.value, [], mapping)
+            return self
         else:
-            return None
+            return self
 
     def __repr__(self):
         return "provda.path_template({})".format(self.value)
@@ -210,9 +224,10 @@ class cause(Setting):
 
     def get(self, mapping):
         if self.value is not None:
-            return _vformat(self.value, [], mapping)
+            self.value = _vformat(self.value, [], mapping)
+            return self
         else:
-            return None
+            return self
 
     def __repr__(self):
         return "provda.cause({})".format(self.value)
@@ -237,9 +252,10 @@ class risk(Setting):
 
     def get(self, mapping):
         if self.value is not None:
-            return _vformat(self.value, [], mapping)
+            self.value = _vformat(self.value, [], mapping)
+            return self
         else:
-            return None
+            return self
 
     def __repr__(self):
         return "provda.risk({})".format(self.value)
@@ -265,10 +281,16 @@ class sex(Setting):
             raise BadParameterType("sex", value)
 
     def get(self, mapping):
-        return self.value
+        return self
 
     def __repr__(self):
         return "provda.sex({})".format(self.value)
 
     def __str__(self):
         return str(self.value)
+
+    def word(self):
+        """
+        The word function on this type returns male, female, or both.
+        """
+        return ["Undefined", "male", "female", "both"][self.value]

@@ -364,7 +364,7 @@ def add_arguments(parser):
         elif isinstance(default, collections.Mapping):
             pass
         else:
-            logger.warn("Not sure what type {} is.".format(default))
+            parser_group.add_argument("--{}".format(flag, type=str))
 
 
 def namespace_settings(args):

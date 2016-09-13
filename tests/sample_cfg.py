@@ -15,4 +15,3 @@ param = provda.get_parameters("provda.tests.sample", {
     "memlimit": provda.int(20, tracked=False),
     "list_of_stuff" : ["one", "two", "three"]
     })
-
