@@ -21,6 +21,7 @@ def transform_files(cds):
     print(param["cod_out"])
     print("memory limit {} is untracked".format(param["memlimit"]))
     print(param["list_of_stuff"])
+    assert len(param["list_of_stuff"]) == 3
 
 
 
@@ -46,6 +47,9 @@ if __name__ == "__main__":
     logger.info("logger info")
     logger.warn("logger warn")
     logger.error("logger error")
+    list_of_stuff = param["list_of_stuff"]
+    list_of_stuff.remove("one")
+    print(list_of_stuff)
 
     transform_files((param["acause"], param["date"],
                      param["sex_id"]))

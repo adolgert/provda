@@ -5,6 +5,7 @@ It copies the pattern (and code) from the logging module so that
 each client Python module can have a local settings object.
 """
 import collections
+import copy
 import json
 import logging
 import yaml
@@ -228,9 +229,9 @@ class Parameters(collections.Mapping):
                 rv = retval.get(self)
                 if rv is None:
                     raise KeyError(name)
-                return rv
+                return copy.copy(rv)
             else:
-                return retval
+                return copy.copy(retval)
         elif self.parent is not None:
             return self.parent[name]
         else:
