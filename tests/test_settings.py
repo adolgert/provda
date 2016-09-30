@@ -19,3 +19,17 @@ class TestBasic(object):
     def test_defaults(self):
         import sample
         assert sample.parameters["risk"] == "highdiving"
+
+
+@pytest.fixture
+def exampleimp():
+    import minipackage
+    return minipackage
+
+def test_main(exampleimp):
+    assert len(exampleimp.param["demog"]) == 4
+
+def test_sub(exampleimp):
+    import minipackage.sub.examplemod
+    print(minipackage.sub.examplemod.params())
+    assert len(minipackage.sub.examplemod.params())>0
