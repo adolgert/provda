@@ -3,22 +3,11 @@ import provda
 
 
 class TestBasic(object):
-    def test_read(self):
-        parameters = provda.get_parameters("provda.tests.sample")
-        provda.read_json(open("sample.settings"))
-        assert parameters["risk"]=="smoking"
-
-        subparams = provda.get_parameters("provda.tests.submodule")
-        assert subparams["algorithm"]=="steepest descent"
-
-    def test_hierarchical(self):
-        parameters = provda.get_parameters("provda.tests.sample")
-        provda.read_json(open("sample.settings"))
-        assert parameters["runlimit"]==10
 
     def test_defaults(self):
         import sample
-        assert sample.parameters["risk"] == "highdiving"
+        param = provda.get_parameters("provda.tests.sample")
+        assert param["use_x"] == True
 
 
 @pytest.fixture
@@ -31,5 +20,6 @@ def test_main(exampleimp):
 
 def test_sub(exampleimp):
     import minipackage.sub.examplemod
+    print(provda.parameters.Parameters.manager)
     print(minipackage.sub.examplemod.params())
     assert len(minipackage.sub.examplemod.params())>0

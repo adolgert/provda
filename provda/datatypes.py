@@ -1,7 +1,10 @@
 """
 These are data types to use when defining parameters.
 """
-import __builtin__
+try:
+    import builtins
+except ImportError:
+    import __builtin__ as builtins # Python 2
 import logging
 import string
 
@@ -19,7 +22,12 @@ class FormatterMissing(string.Formatter):
         ans = super(FormatterMissing, self).parse(format_string)
         return ans
 
-    def _vformat(self, format_string, args, kwargs, used_args, recursion_depth):
+    def vformat(self, format_string, args, kwargs):
+        used_args = set()
+        result = self._qformat(format_string, args, kwargs, used_args, 2)
+        return result
+
+    def _qformat(self, format_string, args, kwargs, used_args, recursion_depth):
         """
         This is a copy of the _format method in string.Formatter
         but missing keys are treated as plain text.
@@ -50,7 +58,7 @@ class FormatterMissing(string.Formatter):
                         raise KeyError
                     used_args.add(arg_used)
                     obj = self.convert_field(obj, conversion)
-                    format_spec = self._vformat(format_spec, args, kwargs,
+                    format_spec = self._qformat(format_spec, args, kwargs,
                                                 used_args, recursion_depth-1)
                     result.append(self.format_field(obj, format_spec))
                 except KeyError as ke:
@@ -75,7 +83,7 @@ class bool(Setting):
     def set(self, value):
         try:
             if value is not None:
-                self.value = __builtin__.bool(value)
+                self.value = builtins.bool(value)
             else:
                 self.value = None
         except ValueError as e:
@@ -99,7 +107,7 @@ class int(Setting):
     def set(self, value):
         try:
             if value is not None:
-                self.value = __builtin__.int(value)
+                self.value = builtins.int(value)
             else:
                 self.value = None
         except ValueError as e:
@@ -128,7 +136,7 @@ class double(Setting):
     def set(self, value):
         try:
             if value is not None:
-                self.value = __builtin__.float(value)
+                self.value = builtins.float(value)
             else:
                 self.value = None
         except ValueError as e:
@@ -153,7 +161,7 @@ class string(Setting):
     def set(self, value):
         try:
             if value is not None:
-                self.value = __builtin__.str(value)
+                self.value = builtins.str(value)
             else:
                 self.value = None
         except ValueError as e:
@@ -184,7 +192,7 @@ class path_template(Setting):
     def set(self, value):
         try:
             if value is not None:
-                self.value = __builtin__.str(value)
+                self.value = builtins.str(value)
             else:
                 self.value = None
         except ValueError as e:
@@ -222,7 +230,7 @@ class cause(Setting):
     def set(self, value):
         try:
             if value is not None:
-                self.value = __builtin__.str(value)
+                self.value = builtins.str(value)
             else:
                 self.value = None
         except ValueError as e:
@@ -250,7 +258,7 @@ class risk(Setting):
     def set(self, value):
         try:
             if value is not None:
-                self.value = __builtin__.str(value)
+                self.value = builtins.str(value)
             else:
                 self.value = None
         except ValueError as e:
@@ -279,7 +287,7 @@ class sex(Setting):
     def set(self, value):
         try:
             if value is not None:
-                self.value = __builtin__.int(value)
+                self.value = builtins.int(value)
                 assert self.value in [1, 2, 3]
             else:
                 self.value = None

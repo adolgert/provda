@@ -8,6 +8,7 @@ import collections
 import copy
 import json
 import logging
+import os
 import yaml
 from .datatypes import Setting
 
@@ -62,15 +63,15 @@ class Manager(object):
     It creates and maintains the hierarchy of Parameters objects.
     """
     def __init__(self, rootnode):
+        logger.debug("Manager.__init__ enter")
         self.root = rootnode
         self.parameters_dict = dict()
 
     def get_parameters(self, name, default_dict=None):
-        parameters_instance = None
-        if not isinstance(name, basestring):
+        logger.debug("get_parameters {}: {}".format(name,
+                                    self.parameters_dict.keys()))
+        if not isinstance(name, str):
             raise TypeError("A parameters name must be string or unicode")
-        if isinstance(name, unicode):
-            name = name.encode("utf-8")
         _acquireLock()
         try:
             if name in self.parameters_dict:
@@ -94,6 +95,9 @@ class Manager(object):
                 pass # Nothing to load.
         finally:
             _releaseLock()
+        logger.debug("my id {}".format(id(self)))
+        logger.debug("get_parameters {}: {}".format(name,
+                                            self.parameters_dict.keys()))
         return parameters_instance
 
 
@@ -126,6 +130,17 @@ class Manager(object):
             if c.parent.name[:name_len] != name:
                 aparameters.parent = c.parent
                 c.parent = aparameters
+
+    def __repr__(self):
+        l = list()
+        for name, param_obj in self.parameters_dict.items():
+            if isinstance(param_obj, PlaceHolder):
+                l.append("{}: PlaceHolder".format(name))
+            elif param_obj.parent is not None:
+                l.append("{}: {}".format(name, param_obj.parent.name))
+            else:
+                l.append("{}: None".format(name))
+        return os.linesep.join(l)
 
 
 
@@ -233,7 +248,7 @@ class Parameters(collections.Mapping):
             else:
                 return copy.copy(retval)
         elif self.parent is not None:
-            return self.parent[name]
+            return self.parent.__getitem__(name)
         else:
             raise KeyError(name)
 
@@ -356,7 +371,7 @@ def add_arguments(parser):
             parser_group.add_argument("--{}".format(flag), type=int)
         elif isinstance(default, float):
             parser_group.add_argument("--{}".format(flag), type=float)
-        elif isinstance(default, basestring):
+        elif isinstance(default, str):
             parser_group.add_argument("--{}".format(flag), type=str)
         elif isinstance(default, bool):
             parser_group.add_argument("--{}".format(flag), type=bool)
@@ -378,7 +393,7 @@ def namespace_settings(args):
     logger.debug("settings sent to parameters {}".format(args))
     level = logging.INFO
     if "settings" in args.__dict__:
-        if isinstance(args.settings, basestring):
+        if isinstance(args.settings, str):
             with open(args.settings, "r") as settings_file:
                 read_json(settings_file)
         elif isinstance(args.settings, collections.Iterable):
@@ -423,7 +438,7 @@ def namespace_settings(args):
 
 
 def read(file_or_stream):
-    if issubclass(file_or_stream, basestring):
+    if issubclass(file_or_stream, str):
         filename = file_or_stream
         if filename.endswith(".yml"):
             with open(filename, "r") as yaml_stream:
