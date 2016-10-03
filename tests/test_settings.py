@@ -23,3 +23,14 @@ def test_sub(exampleimp):
     print(provda.parameters.Parameters.manager)
     print(minipackage.sub.examplemod.params())
     assert len(minipackage.sub.examplemod.params())>0
+
+
+def test_two_sub(exampleimp):
+    import minipackage.sub.examplemod
+    import minipackage.down.examplemod
+    print(provda.parameters.Parameters.manager)
+    print(minipackage.sub.examplemod.params())
+    assert len(minipackage.sub.examplemod.params())>0
+    assert "filetypes" in minipackage.down.param
+    assert "demog" in minipackage.down.param
+    assert "demog" in minipackage.sub.examplemod.param

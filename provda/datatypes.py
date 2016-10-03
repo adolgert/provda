@@ -18,6 +18,11 @@ class BadParameterType(Exception):
 
 
 class FormatterMissing(string.Formatter):
+    """
+    This subclasses Formatter in order to ignore string replacements
+    where the key is missing. So "{hi}{there}{bob}".format(hi="how", there="is")
+    becomes "howis{bob}".
+    """
     def parse(self, format_string):
         ans = super(FormatterMissing, self).parse(format_string)
         return ans
