@@ -12,7 +12,7 @@ import os
 import yaml
 from .datatypes import Setting
 
-__all__ = [ "get_parameters", "namespace_settings", "read_json" ]
+__all__ = ["get_parameters", "namespace_settings", "read_json"]
 
 __author__ = "Andrew Dolgert <adolgert@uw.edu>"
 __status__ = "development"
@@ -22,6 +22,7 @@ logger = logging.getLogger("provda.parameters")
 # Parameters behave like loggers in that there is a root
 # and sub-parameter sets, delineated by a period-separated
 # hierarchical value, which would be a module name.
+
 
 class NoSuchParameter(Exception):
     """
@@ -49,7 +50,7 @@ class PlaceHolder(object):
     above don't exist, this PlaceHolder stands in their place.
     """
     def __init__(self, aparameters):
-        self.parameters_map = { aparameters : None }
+        self.parameters_map = {aparameters: None}
 
     def append(self, aparameters):
         if aparameters not in self.parameters_map:
@@ -68,8 +69,8 @@ class Manager(object):
         self.parameters_dict = dict()
 
     def get_parameters(self, name, default_dict=None):
-        logger.debug("get_parameters {}: {}".format(name,
-                                    self.parameters_dict.keys()))
+        logger.debug("get_parameters {}: {}".format(
+                     name, self.parameters_dict.keys()))
         if not isinstance(name, str):
             raise TypeError("A parameters name must be string or unicode")
         _acquireLock()
@@ -92,14 +93,13 @@ class Manager(object):
             if default_dict is not None:
                 parameters_instance.init(default_dict)
             else:
-                pass # Nothing to load.
+                pass  # Nothing to load.
         finally:
             _releaseLock()
         logger.debug("my id {}".format(id(self)))
         logger.debug("get_parameters {}: {}".format(name,
                                             self.parameters_dict.keys()))
         return parameters_instance
-
 
     def _fixup_parents(self, aparameters):
         name = aparameters.name
@@ -121,7 +121,6 @@ class Manager(object):
             rv = self.root
         aparameters.parent = rv
 
-
     def _fixup_children(self, ph, aparameters):
         name = aparameters.name
         name_len = len(name)
@@ -141,7 +140,6 @@ class Manager(object):
             else:
                 l.append("{}: None".format(name))
         return os.linesep.join(l)
-
 
 
 class ChainedParametersIter(object):
@@ -169,7 +167,7 @@ class ChainedParametersIter(object):
 
     def __next__(self):
         was_seen = True
-        return_value=None
+        return_value = None
         while was_seen:
             try:
                 return_value = next(self.iter)
@@ -183,7 +181,6 @@ class ChainedParametersIter(object):
             was_seen = next in self.seen
         self.seen.add(return_value)
         return return_value
-
 
 
 class Parameters(collections.Mapping):
@@ -261,7 +258,6 @@ class Parameters(collections.Mapping):
         """
         return ChainedParametersIter(self)
 
-
     def __len__(self):
         """
         Mapping interface
@@ -269,19 +265,17 @@ class Parameters(collections.Mapping):
         """
         return len(self._items)
 
-
     def get_child(self, suffix):
         if self.root is not self:
             suffix = ".".join((self.name, suffix))
             return self.manager.get_parameters(suffix)
-
 
     # In order to be hashable
     def __cmp__(self, other):
         return cmp(self.name, other.name)
 
     def __eq__(self, other):
-        return self.name==other.name
+        return self.name == other.name
 
     def __hash__(self):
         return hash(self.name)
@@ -320,8 +314,6 @@ def get_parameters(name=None, default_dict=None):
         return root
 
 
-## Working with argparse.ArgumentParser
-
 def add_arguments(parser):
     """
     Adds arguments to an argparse.ArgumentParser from settings files.
@@ -339,11 +331,11 @@ def add_arguments(parser):
     :param parser: This is an argparse.ArgumentParser.
     :return:
     """
-    parser_group=parser.add_argument_group("settings")
+    parser_group = parser.add_argument_group("settings")
     # These map from the name to the default value.
     qualified_parameters = dict()
     unqualified_parameters = dict()
-    nonunique = set()
+    non_unique = set()
 
     for qualify, parameters in Parameters.manager.parameters_dict.items():
         if isinstance(parameters, Parameters):
@@ -352,19 +344,19 @@ def add_arguments(parser):
                     value = parameters[name]
                 except KeyError:
                     value = "None"
-                qualified_parameters["{}.{}".format(qualify, name)]=value
+                qualified_parameters["{}.{}".format(qualify, name)] = value
                 if name in unqualified_parameters:
-                    nonunique.add(name)
+                    non_unique.add(name)
                 else:
-                    unqualified_parameters[name]=value
+                    unqualified_parameters[name] = value
         else:
-            pass # no parameters in PlaceHolder
+            pass  # no parameters in PlaceHolder
 
     reel_out = collections.OrderedDict()
-    reel_out.update({k : qualified_parameters[k]
+    reel_out.update({k: qualified_parameters[k]
                      for k in sorted(qualified_parameters)})
-    reel_out.update({k : unqualified_parameters[k]
-                     for k in sorted(set(unqualified_parameters)-nonunique)})
+    reel_out.update({k: unqualified_parameters[k]
+                     for k in sorted(set(unqualified_parameters)-non_unique)})
 
     for flag, default in reel_out.items():
         if isinstance(default, int):
@@ -406,18 +398,18 @@ def namespace_settings(args):
 
     for flag, value in args.__dict__.items():
         if flag == "settings":
-            continue # already handled
+            continue  # already handled
 
         elif value is None:
             continue
 
         elif "." in flag:
             split = flag.split(".")
-            parameters_name=".".join(split[:-1])
+            parameters_name = ".".join(split[:-1])
             undotted = split[-1]
             logger.debug("Setting {} to {}".format(undotted, value))
             Parameters.manager.get_parameters(parameters_name).update(
-                { undotted : value })
+                {undotted: value})
 
         else:
             logger.debug("else flag {} value {}".format(flag, value))
@@ -428,13 +420,12 @@ def namespace_settings(args):
                     if flag in parameters._items:
                         logger.debug("Setting {} to {} in {}".format(
                             flag, value, q))
-                        parameters.update({flag : value})
+                        parameters.update({flag: value})
                         unset = False
                 else:
-                    pass # no parameters in PlaceHolder
+                    pass  # no parameters in PlaceHolder
             if unset:
-                pass # Can we check whether this was a user-specified param?
-
+                pass  # Can we check whether this was a user-specified param?
 
 
 def read(file_or_stream):
@@ -450,7 +441,7 @@ def read(file_or_stream):
         read_json(file_or_stream)
 
 
-## Loading settings
+# Loading settings
 def read_yaml(stream):
     """
     Read a json file which has parameters listed in sections
@@ -465,7 +456,7 @@ def read_yaml(stream):
         get_parameters(namespace).update(settings)
 
 
-## Loading settings
+# Loading settings
 def read_json(stream):
     """
     Read a json file which has parameters listed in sections
@@ -474,16 +465,16 @@ def read_json(stream):
     :param stream: A Python stream object, that is, ``f=open(filename, "r").``
     :return: None
     """
-    per_module_settings=json.load(stream)
+    per_module_settings = json.load(stream)
     logger.debug(per_module_settings)
     for (namespace, settings) in per_module_settings.items():
         get_parameters(namespace).update(settings)
 
 
-## Threading to protect global hierarchy of parameters.
-
+# Threading to protect global hierarchy of parameters.
 def _acquireLock():
     pass
+
 
 def _releaseLock():
     pass

@@ -4,7 +4,7 @@ These are data types to use when defining parameters.
 try:
     import builtins
 except ImportError:
-    import __builtin__ as builtins # Python 2
+    import __builtin__ as builtins  # Python 2
 import logging
 import string
 
@@ -20,8 +20,8 @@ class BadParameterType(Exception):
 class FormatterMissing(string.Formatter):
     """
     This subclasses Formatter in order to ignore string replacements
-    where the key is missing. So "{hi}{there}{bob}".format(hi="how", there="is")
-    becomes "howis{bob}".
+    where the key is missing. So
+    "{hi}{there}{bob}".format(hi="how", there="is") becomes "howis{bob}".
     """
     def parse(self, format_string):
         ans = super(FormatterMissing, self).parse(format_string)
@@ -32,7 +32,8 @@ class FormatterMissing(string.Formatter):
         result = self._qformat(format_string, args, kwargs, used_args, 2)
         return result
 
-    def _qformat(self, format_string, args, kwargs, used_args, recursion_depth):
+    def _qformat(self, format_string, args, kwargs,
+                 used_args, recursion_depth):
         """
         This is a copy of the _format method in string.Formatter
         but missing keys are treated as plain text.
@@ -78,7 +79,10 @@ class FormatterMissing(string.Formatter):
 
 _vformat = FormatterMissing().vformat
 
-class Setting(object): pass
+
+class Setting(object):
+    pass
+
 
 class bool(Setting):
     def __init__(self, value, tracked=True):
@@ -153,7 +157,6 @@ class double(Setting):
     def __repr__(self):
         return "provda.double({})".format(self.value)
 
-
     def __str__(self):
         return str(self.value)
 
@@ -180,7 +183,6 @@ class string(Setting):
 
     def __repr__(self):
         return "provda.string({})".format(self.value)
-
 
     def __str__(self):
         return str(self.value)
@@ -278,7 +280,6 @@ class risk(Setting):
 
     def __repr__(self):
         return "provda.risk({})".format(self.value)
-
 
     def __str__(self):
         return str(self.value)

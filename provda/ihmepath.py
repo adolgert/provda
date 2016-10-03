@@ -36,4 +36,3 @@ def build_path(host_type, team, role, date, description,
     if filename is not None:
         directory_stack.append(filename)
     return os.path.join(*directory_stack)
-
