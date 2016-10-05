@@ -40,7 +40,7 @@ class ProvLogger(logging.Logger):
                  extra=kw)
 
     def read_file(self, file_path, *args, **kwargs):
-        kw = {"prov": True, "type": "document", "id": file_id,
+        kw = {"prov": True, "type": "document",
               "path": file_path, "used": ProvLogger.process_id}
         kw.update(kwargs)
         self._log(logging.DEBUG, "Read {}".format(file_path), args,

@@ -34,3 +34,10 @@ def test_show_provenance_stream():
     assert before > 0
     logger.debug("But don't show this.")
     assert s.tell()-before == 0
+
+
+def test_other_calls():
+    logger = logging.getLogger("provda.test.test_provlog")
+    logger.read_file("/ihme/forecasting/blah.csv")
+    logger.write_table("sql:///forecasting-db", "gbd", "output_v97")
+    logger.read_table("sql:///forecasting-db", "gbd", "epi_v80")
