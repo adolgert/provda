@@ -1,6 +1,6 @@
-====================
-Reporting Provenance
-====================
+=================
+Provenance Logger
+=================
 
 This module makes a subclass ``logging.Logger`` which has a couple of
 extra methods that record provenance information. With this extra information,
@@ -12,9 +12,9 @@ regular logging messages.
 Provenance is the record of what caused something to happen.
 There are two standards, the
 `Open Provenance Model <http://openprovenance.org/>`_ and the
-`W3C Provenance Model<https://www.w3.org/TR/prov-overview/>`_.
+`W3C Provenance Model <https://www.w3.org/TR/prov-overview/>`_.
 This will use
-the `W3C PROV-N<https://www.w3.org/TR/2013/REC-prov-n-20130430/>`_
+the `W3C PROV-N <https://www.w3.org/TR/2013/REC-prov-n-20130430/>`_
 representation of provenance.
 
 An example::

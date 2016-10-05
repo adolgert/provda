@@ -91,7 +91,7 @@ def inflate(kv):
     """
     entities = [k for k in kv if not k.contains("_")]
     res = {x: {} for x in entities}
-    res["relation"]=kv["relation"]
+    res["assertion"]=kv["assertion"]
 
     for k, v in kv.items():
         under = k.find("_")

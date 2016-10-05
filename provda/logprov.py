@@ -21,7 +21,6 @@ class ProvLogger(logging.Logger):
         if name == "root":
             user = {"user": getpass.getuser(), "type": "personAgent"}
 
-
     def create_file(self, file_path, *args, **kwargs):
         """
         Messages created by create_file have a dictionary of extra
@@ -39,6 +38,30 @@ class ProvLogger(logging.Logger):
         kw.update(kwargs)
         self._log(logging.DEBUG, "Create {}".format(file_path), args,
                  extra=kw)
+
+    def read_file(self, file_path, *args, **kwargs):
+        kw = {"prov": True, "type": "document", "id": file_id,
+              "path": file_path, "used": ProvLogger.process_id}
+        kw.update(kwargs)
+        self._log(logging.DEBUG, "Read {}".format(file_path), args,
+                 extra=kw)
+
+    def write_table(self, database, schema, table, *args, **kwargs):
+        id = "{}/{}/{}".format(database, schema, table)
+        kw = {"prov": True, "type": "table", "id": id,
+              "database": database, "schema": schema,
+              "table": table, "relation": "wasCreatedBy"}
+        kw.update(kwargs)
+        self._log(logging.DEBUG, "Create table {}".format(kw), args, extra=kw)
+
+
+    def read_table(self, database, schema, table, *args, **kwargs):
+        id = "{}/{}/{}".format(database, schema, table)
+        kw = {"prov": True, "type": "table", "id": id,
+              "database": database, "schema": schema,
+              "table": table, "relation": "used"}
+        kw.update(kwargs)
+        self._log(logging.DEBUG, "Read table {}".format(kw), args, extra=kw)
 
 
 logging.setLoggerClass(ProvLogger)

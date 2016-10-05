@@ -1,6 +1,6 @@
-============
-Introduction
-============
+==========================
+Design of Parameters Class
+==========================
 The responsibility of this class is to read the settings
 file and deliver it to the class while versioning the settings
 and recording what files and database
