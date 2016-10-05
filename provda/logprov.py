@@ -1,10 +1,7 @@
 import getpass
 import logging
+import sys
 import uuid
-
-
-def init():
-    user = {"user": getpass.getuser(), "type": "personAgent"}
 
 
 class ProvLogger(logging.Logger):
@@ -53,3 +50,17 @@ class ProvFilter:
     """
     def filter(self, record):
         return hasattr(record, "prov")
+
+
+def add_handler(logger):
+    """
+    Add a handler to a logging.Logger which will print a message in such
+    a way that you can pick out the provenance messages using grep.
+    :param logger: A logging.logger, such as logging.root.
+    """
+    sh = logging.StreamHandler(sys.stdout)
+    sh.setLevel(logging.DEBUG)
+    sh.addFilter(ProvFilter())
+    formatter = logging.Formatter(fmt="logprov: %(message)")
+    sh.setFormatter(formatter)
+    logger.addHandler(sh)

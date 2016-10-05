@@ -14,6 +14,7 @@ Contents:
    intro
    usecases
    reporting
+   annotation
    tutorial
 
 
