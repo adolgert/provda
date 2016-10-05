@@ -13,6 +13,7 @@ Contents:
 
    intro
    usecases
+   reporting
    tutorial
 
 
