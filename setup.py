@@ -21,6 +21,15 @@ setup(name="provda",
       author_email="adolgert@uw.edu",
       license="Apache",
       packages=["provda"],
+      install_requires = [
+          "GitPython",
+          "h5py",
+          "PyPDF2",
+          "wrapt"
+      ],
+      dependency_links = [
+        "https://github.com/trungdong/prov.git"
+      ],
       zip_safe=True,
       scripts=[]
       )
