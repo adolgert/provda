@@ -4,6 +4,7 @@ import sys
 import provda
 import provda.logprov
 
+
 def test_create_file():
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger("provda.test.test_provlog")

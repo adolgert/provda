@@ -4,7 +4,7 @@ import org_specific
 
 
 logger = logging.getLogger("module")
-params = org_specific.get_parameters("module", { "draws": 1000})
+params = org_specific.get_parameters("module", {"draws": 1000})
 
 
 def test_params():

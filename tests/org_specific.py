@@ -2,10 +2,13 @@
 This represents an organization-specific use of provda.
 Import this, and defaults are set.
 """
+import atexit
 import logging
+import logstash
 import provda.logprov
 import provda.model
 import provda.patch
+import provda.handler
 
 
 namespaces = {
@@ -16,9 +19,15 @@ namespaces = {
 }
 
 
+def report(model):
+    print("reporting the model")
+    provda.handler.send_tcp(model.json(), "localhost", 5000)
+
+
 def setup():
-    prov_doc = provda.model.ProcessDocument(namespaces)
-    logging.root.addHandler(prov_doc)
+    model = provda.model.ProcessDocument(namespaces)
+    logging.root.addHandler(model)
+    atexit.register(report, model)
 
 
 def get_parameters(name, value=None):

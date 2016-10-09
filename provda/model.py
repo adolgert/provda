@@ -35,6 +35,7 @@ class ProcessDocument:
         :param namespaces: An iterable of (short, long) namespaces.
         """
         self._document = prov.model.ProvDocument()
+        self._targets = list()
 
         if isinstance(namespaces, collections.Mapping):
             namespaces = namespaces.items()
@@ -62,9 +63,6 @@ class ProcessDocument:
     def filter(self, record):
         return hasattr(record, "prov")
 
-    def emit(self, record):
-        pass
-
     def handle(self, record):
         print("record.prov {}".format(record.prov))
         p = record.prov
@@ -85,6 +83,9 @@ class ProcessDocument:
         else:
             raise RuntimeError("Unknown type of provenance record {}".format(
                 p["kind"]))
+
+    def json(self):
+        return self._document.serialize(format="json")
 
     def __str__(self):
         return self._document.get_provn()
