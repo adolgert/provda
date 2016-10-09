@@ -16,22 +16,18 @@ __status__ = "development"
 
 logger = logging.getLogger("provda")
 
+
 # These are forwards to the parameters module.
 def get_parameters(name=None, default_dict=None):
     return parameters.get_parameters(name, default_dict)
 
-def add_arguments(parser):
-    parameters.add_arguments(parser)
-
-def namespace_settings(args):
-    parameters.namespace_settings(args)
 
 def read_json(stream):
     parameters.read_json(stream)
 
+
 def read(file_or_stream):
     parameters.read(file_or_stream)
-
 
 
 def input_file(template_string, **kw_replacements):
@@ -61,10 +57,7 @@ def output_database_table(template_string, **kw_replacements):
     return table
 
 
-
-
-## Working with argparse.ArgumentParser
-
+# Working with argparse.ArgumentParser
 def add_arguments(parser):
     """
     Adds arguments to an argparse.ArgumentParser from settings files.
@@ -88,7 +81,6 @@ def add_arguments(parser):
     parameters.add_arguments(parser)
 
 
-
 def namespace_settings(args):
     """
     Sets settings from an argparse specification.
@@ -107,14 +99,13 @@ def namespace_settings(args):
             level = max(0, logging.DEBUG - 5 * (args.v + 1))
 
         elif flag == "settings":
-            continue # already handled
+            continue  # already handled
 
         elif value is None:
             continue
 
         else:
-            pass # Can we check whether this was a user-specified param?
-
+            pass  # Can we check whether this was a user-specified param?
 
 
 def config_logging(args):
@@ -159,14 +150,13 @@ def config_logging(args):
 
     sh = logging.StreamHandler()
     sh.setLevel(level)
-    formatter = logging.Formatter("%(asctime)s:%(levelname)s:%(name)s: %(message)s")
+    formatter = logging.Formatter(
+        "%(asctime)s:%(levelname)s:%(name)s: %(message)s")
     sh.setFormatter(formatter)
     logging.getLogger().addHandler(sh)
 
 
-
-## Loading settings
-
+# Loading settings
 def add_provenance(filename, additional=None):
     """
     This adds provenance information to a file.
@@ -176,4 +166,4 @@ def add_provenance(filename, additional=None):
     :param additional: A Mapping object (dict) of key-value pairs.
     :return: None
     """
-    pass # RFC 3339 for the dates.
+    pass  # RFC 3339 for the dates.

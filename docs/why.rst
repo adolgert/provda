@@ -23,6 +23,8 @@ The rules are these:
 
 1. We use the language of `W3C PROV-N <https://www.w3.org/TR/2013/REC-prov-n-20130430/>`_
    because it is human-readable, so there are entities, activities, and agents.
+   There is a library, called `prov <https://github.com/trungdong/prov>`_,
+   that implements the W3C PROV model. That's what we use under the hood.
 
 2. Every entity, activity, or agent has a unique identifier (id) constructed
    from two pieces, a domain and a name. The domain may be an application
@@ -36,28 +38,15 @@ The rules are these:
 
 5. Beyond that, there are key-value pairs assigned to entities or relationships.
 
-Prov-N provides this cute little language that looks like::
+PROV-N provides this cute little language that looks like::
 
     entity(e1)
     activity(ex:a1, [ex:type="process"])
     wasGeneratedBy(e1, a1, 2016-10-10T16:00:00)
 
-We want to be able to send provenance information through distributed
-logging, so it can look largely like Prov-N.
-However, in order to embed it into files as key-value pairs, we will need
-a much restrictive
-and type-free encoding in that everything is a string, so they will
-look like the following::
-
-    assertions: assertion1 assertion2 assertion3
-    assertion1: entity e1
-    assertion2: activity a1
-    assertion3: wasGeneratedBy e1 a1
-    a1_type: process
-    assertion1_date: 2016-10-10T16:00:00
-
-You might find that as properties on a Group in an HDF file
-or as key-value pairs in a PDF image.
+The prov library will serialize and deserialize to both
+PROV-N and JSON formats. We can either send those to a provenance
+store or embed them in HDF or PDF files.
 
 Where to go for more provenance
 -------------------------------

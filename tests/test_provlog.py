@@ -33,7 +33,7 @@ def test_show_provenance_stream():
     before = s.tell()
     assert before > 0
     logger.debug("But don't show this.")
-    assert s.tell()-before == 0
+    assert s.tell() - before == 0
 
 
 def test_other_calls():

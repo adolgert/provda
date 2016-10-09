@@ -2,10 +2,108 @@
 Tutorial
 ========
 
+--------------------------------------
+Create an Organization-specific Import
+--------------------------------------
+
+This library is a set of tools. You can create a module
+that defines for your group or software how it will use
+provenance. For instance, this one defines namespaces,
+ensures the logging hooks are in place, and monkey-patches
+any of the covered libraries.::
+
+    import logging
+    import logstash
+    import provda.logprov
+    import provda.model
+    import provda.patch
+
+
+    namespaces = {
+        "is": "https://healtdata.org/instances",
+        "person": "https://healthdata.org/people",
+        "code": "https://healthdata.org/code",
+        "doc": "https://healthdata.org/document"
+    }
+
+
+    @provda.datatypes.add
+    class cause:
+      """Makes a typed datatype available to settings."""
+      def __init__(self, value, tracked=True):
+        self.tracked = tracked
+        self.value = str(value)
+
+
+    @provda.datatypes.add
+    class risk:
+      """Makes a typed datatype available to settings."""
+      def __init__(self, value, tracked=True):
+        self.tracked = tracked
+        self.value = str(value)
+
+
+    def setup():
+        prov_doc = provda.model.ProcessDocument(namespaces)
+        logging.root.addHandler(prov_doc)
+        prov_doc.addHandler(logstash.TCPLogstashHandler("localhost", 5959))
+
+
+    def get_parameters(name, value=None):
+        return provda.parameters.get_parameters(name, value)
+
+    setup()
+
+The logstash handler will send messages from the provenance collection
+as JSON to logstash.
+
+
+------------------
+Automatic Patching
+------------------
+
+We know pandas.read_hdf() will open a file, so the patching mechanism
+of provda.patch will track when this routine is called and then
+record that a file was read. If you import provda.patch, it
+patches whatever is already loaded and recognized.
+
+
+-------------------------
+Explicit Provenance Calls
+-------------------------
+
+The provenance store is attached to the logging mechanism, so it's
+available through any logger you create.::
+
+    import logging
+    import reader
+
+    logger = logging.getLogger("my.module")
+    def transform(causes):
+      for acause in causes:
+        logger.read_file("/in/filename")
+        risks = reader.read("/in/filename", "r")
+        # do stuff
+        logger.create_file("/in/filename.out")
+        result = reader.write("/in/filename.out, "w")
+
+-----------------------------
+Insert Provenance Into a File
+-----------------------------
+
+It's possible to insert strings into some documents such
+as HDF5 and PDF. That takes the following form.::
+
+   f = h5py.write("file.hdf")
+   f.close()
+   provda.annotate.hdf("file.hdf")
+
+This will always write into the file the provenance
+of the current process and that it wrote this file.
+
 --------------
 Settings Files
 --------------
-
 
 Provda can make it easier to get settings. Use it the way
 you would use logging.::
@@ -88,40 +186,3 @@ A parameter can be marked as ``untracked`` when it isn't relevant
 to what gets calculated. This might include settings for logging,
 or whether a machine is on development or production
 clusters.
-
----------------
-File Provenance
----------------
-
-This module offers two ways to record provenance.
-It will record what database table or file a script
-has read or written. It will also add provenance information
-to HDF5 and PDF files.
-
-In order to record what files were read or written, use
-the ``provda.infile()`` and ``provda.outfile()`` functions::
-
-    def transform(causes):
-      for acause in causes:
-        risks = pandas.open(provda.infile("risks_in", acause,
-                today, 2), "r")
-        # do stuff
-        result = pandas.open(provda.outfile("cod_out", acause,
-                today, 2), "w")
-
-The ``infile()``, ``outfile()``, and ``inoutfile()`` commands act like
-Python format commands, except that they will look in the settings
-file for the format string.
-
-When you write certain kinds of files, provda will add provenance data
-to those files::
-
-    def transform(causes):
-      for acause in causes:
-        # do stuff
-        hdf5_file = pandas.open(provda.outfile("cod_out", acause,
-                today, 2), "w")
-        provda.add_provenance(hdf5_file)
-        pdf = matplotlib.write("cod_out.pdf")
-        provda.add_provenance(pdf)
-

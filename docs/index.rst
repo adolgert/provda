@@ -31,11 +31,11 @@ Contents:
    :maxdepth: 2
 
    why
+   tutorial
    reporting
    annotation
    intro
    usecases
-   tutorial
 
 
 Indices and tables

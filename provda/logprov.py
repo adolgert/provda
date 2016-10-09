@@ -1,7 +1,5 @@
-import getpass
 import logging
 import sys
-import uuid
 
 
 class ProvLogger(logging.Logger):
@@ -14,12 +12,8 @@ class ProvLogger(logging.Logger):
     Extra information associated with these messages is meant to mirror
     https://www.w3.org/TR/2013/REC-prov-n-20130430/
     """
-    process_id = uuid.uuid4()
-
     def __init__(self, name, level=logging.NOTSET):
         super().__init__(name, level)
-        if name == "root":
-            user = {"user": getpass.getuser(), "type": "personAgent"}
 
     def create_file(self, file_path, *args, **kwargs):
         """
@@ -31,37 +25,31 @@ class ProvLogger(logging.Logger):
         :param args: Any extra args
         :param kwargs: and extra keyword args.
         """
-        file_id = uuid.uuid4()
         # Use _log because self.log can exclude msg based on level.
-        kw = {"prov": True, "type": "document", "id": file_id,
-              "path": file_path, "wasCreatedBy": ProvLogger.process_id}
+        kw = {"path": file_path, "kind": "create_file"}
         kw.update(kwargs)
         self._log(logging.DEBUG, "Create {}".format(file_path), args,
-                 extra=kw)
+                  extra={"prov": kw})
 
     def read_file(self, file_path, *args, **kwargs):
-        kw = {"prov": True, "type": "document",
-              "path": file_path, "used": ProvLogger.process_id}
+        kw = {"path": file_path, "kind": "read_file"}
         kw.update(kwargs)
         self._log(logging.DEBUG, "Read {}".format(file_path), args,
-                 extra=kw)
+                  extra={"prov": kw})
 
     def write_table(self, database, schema, table, *args, **kwargs):
-        id = "{}/{}/{}".format(database, schema, table)
-        kw = {"prov": True, "type": "table", "id": id,
-              "database": database, "schema": schema,
-              "table": table, "relation": "wasCreatedBy"}
+        kw = {"database": database, "schema": schema, "table": table,
+              "kind": "write_table"}
         kw.update(kwargs)
-        self._log(logging.DEBUG, "Create table {}".format(kw), args, extra=kw)
-
+        self._log(logging.DEBUG, "Write table {}".format(kw), args,
+                  extra={"prov": kw})
 
     def read_table(self, database, schema, table, *args, **kwargs):
-        id = "{}/{}/{}".format(database, schema, table)
-        kw = {"prov": True, "type": "table", "id": id,
-              "database": database, "schema": schema,
-              "table": table, "relation": "used"}
+        kw = {"database": database, "schema": schema, "table": table,
+              "kind": "read_table"}
         kw.update(kwargs)
-        self._log(logging.DEBUG, "Read table {}".format(kw), args, extra=kw)
+        self._log(logging.DEBUG, "Read table {}".format(kw), args,
+                  extra={"prov": kw})
 
 
 logging.setLoggerClass(ProvLogger)
