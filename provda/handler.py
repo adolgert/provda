@@ -33,6 +33,7 @@ def send_tcp(record, host, port, timeout=10):
         pfields, sort_keys=True, indent=4, separators=(',', ': ')))
     transmittable = ["agent", "entity", "activity", "used",
                      "wasAssociatedWith", "wasGeneratedBy"]
+    document_id = list(pfields["activity"].keys())[0]
     simple_fields = [str, float, int, bool]
     logger.debug("Not transmitting {}".format(
         set(pfields.keys())-set(transmittable)))
@@ -46,18 +47,24 @@ def send_tcp(record, host, port, timeout=10):
                 fields = dict()
                 for name, val in ifields.items():
                     if any(isinstance(val, s) for s in simple_fields):
+                        if isinstance(val, str):
+                            print("string looks like :{}:".format(val))
                         fields[name] = val
                     else:
+                        print("jsonify type {} val {}".format(
+                            type(val), val))
                         fields[name] = json.dumps(val)
 
-                fields = {k: json.dumps(v) for (k, v) in ifields.items()}
                 record = json.dumps(
                     {'@message': 'create_file3',
                      '@source_host': "withme",
                      '@version': 1,
                      'prov': kind,
+                     'document': document_id,
+                     'instance': instance,
                      '@timestamp': stamp,
                      "@fields": fields})
+                print("final json {}".format(record))
                 s.sendall(str.encode(record, encoding="utf-8") + b'\n')
                 total = total + 1
     s.close()
