@@ -26,5 +26,5 @@ def test_with_logger():
     m = provda.model.ProcessDocument(namespaces)
     l = provda.logprov.ProvLogger("provda.tests")
     l.addHandler(m)
-    l.create_file("/ihme/forecasting/all.hdf")
+    l.create_file("/ihme/forecasting/all.hdf", "scalarrole")
     print(m)

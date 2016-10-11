@@ -19,4 +19,4 @@ def test_patch():
 
 
 def test_logging():
-    logger.create_file("made")
+    logger.create_file("made", "results")

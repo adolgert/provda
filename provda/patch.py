@@ -16,13 +16,13 @@ logger = logging.getLogger("provda.patch")
 
 @wrapt.decorator
 def report_write(wrapped, instance, args, kwargs):
-    logger.create_file(args[0])
+    logger.create_file(args[0], "unknown")
     return wrapped(*args, **kwargs)
 
 
 @wrapt.decorator
 def report_read(wrapped, instance, args, kwargs):
-    logger.read_file(args[0])
+    logger.read_file(args[0], "unknown")
     return wrapped(*args, **kwargs)
 
 
@@ -86,8 +86,8 @@ def open(*args, **kwargs):
         mode = "r"
 
     if "r" in mode:
-        logger.read_file(args[0])
+        logger.read_file(args[0], "unknown")
     if {"w", "x", "a", "+"} & set(mode):
-        logger.create_file(args[0])
+        logger.create_file(args[0], "unknown")
 
     return builtins.open(*args, **kwargs)

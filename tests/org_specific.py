@@ -4,7 +4,6 @@ Import this, and defaults are set.
 """
 import atexit
 import logging
-import logstash
 import provda.logprov
 import provda.model
 import provda.patch
