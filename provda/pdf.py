@@ -1,5 +1,7 @@
 import collections
+import logging
 import os
+import shutil
 import tempfile
 from PyPDF2 import PdfFileWriter, PdfFileReader
 

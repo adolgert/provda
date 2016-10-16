@@ -6,7 +6,8 @@
 Welcome to Provda's documentation!
 ==================================
 
-Python library to record what ran, what it read, and what it wrote.
+Python library to record what processes ran, what files and tables
+they read and wrote, and what subprocesses they started.
 
 1. An extension to Python's logging module to be able to explicitly
    log provenance events.
@@ -34,6 +35,7 @@ Contents:
    tutorial
    reporting
    annotation
+   process
    intro
    usecases
 

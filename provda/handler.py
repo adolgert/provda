@@ -23,6 +23,23 @@ class TCPJSONHandler(logging.handlers.SocketHandler):
 
 
 def send_tcp(record, host, port, timeout=10):
+    """
+    This is sending messages to a
+    `logstash tcp socket
+    <https://github.com/logstash-plugins/logstash-input-tcp>_`.
+    The key to understanding the format to send is that, whether
+    you send over TCP or UDP, the input channel will decode
+    the incoming string using a codec, and we are assuming the
+    chosen one is either
+    `json <https://github.com/logstash-plugins/logstash-codec-json>_` or
+    `json lines
+    <https://github.com/logstash-plugins/logstash-codec-json_lines>_`.
+
+    :param record: A logger record.
+    :param host: Hostname of logstash.
+    :param port: Port is it on.
+    :param timeout: A timeout in seconds.
+    """
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.settimeout(timeout)
     logger.debug("Sending to {}:{} record {}".format(host, port, record))

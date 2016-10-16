@@ -13,10 +13,7 @@ class ProvLogger(logging.Logger):
     https://www.w3.org/TR/2013/REC-prov-n-20130430/
     """
     def __init__(self, name, level=logging.NOTSET):
-        super().__init__(name, level)
-
-    def create_file(self, file_path, role, *args, **kwargs):
-        write_file(file_path, role, *args, **kwargs)
+        super(ProvLogger, self).__init__(name, level)
 
     def write_file(self, file_path, role, *args, **kwargs):
         """
@@ -29,18 +26,36 @@ class ProvLogger(logging.Logger):
         :param kwargs: and extra keyword args.
         """
         # Use _log because self.log can exclude msg based on level.
-        kw = {"path": file_path, "kind": "write_file", "role": role}
+        kw = {"path": file_path, "kind": "create_file", "role": role}
         kw.update(kwargs)
         self._log(logging.DEBUG, "ProvWrite".format(file_path), args,
                   extra={"prov": kw})
 
     def read_file(self, file_path, role, *args, **kwargs):
+        """
+        Report that we are reading the file with the given path.
+
+        :param file_path str: The filesystem path to the file.
+        :param role: What role the file plays. Its model entity.
+        :param args:  Any additional arguments.
+        :param kwargs:  Or keyword arguments.
+        """
         kw = {"path": file_path, "kind": "read_file", "role": role}
         kw.update(kwargs)
         self._log(logging.DEBUG, "ProvRead".format(file_path), args,
                   extra={"prov": kw})
 
     def write_table(self, database, schema, table, role, *args, **kwargs):
+        """
+        Report we are writing to a particular table.
+
+        :param database str: The database hostname.
+        :param schema: Which schema contains the table.
+        :param table: The table itself.
+        :param role: The model entity in the table.
+        :param args:  Any additional arguments.
+        :param kwargs:  Or keyword arguments.
+        """
         kw = {"database": database, "schema": schema, "table": table,
               "kind": "write_table", "role": role}
         kw.update(kwargs)
@@ -48,13 +63,31 @@ class ProvLogger(logging.Logger):
                   extra={"prov": kw})
 
     def read_table(self, database, schema, table, role, *args, **kwargs):
+        """
+        Report we are reading from a particular table.
+
+        :param database str: The database hostname.
+        :param schema: Which schema contains the table.
+        :param table: The table itself.
+        :param role: The model entity in the table.
+        :param args:  Any additional arguments.
+        :param kwargs:  Or keyword arguments.
+        """
         kw = {"database": database, "schema": schema, "table": table,
               "kind": "read_table", "role": role}
         kw.update(kwargs)
         self._log(logging.DEBUG, "ProvRead {}".format(kw), args,
                   extra={"prov": kw})
 
-    def start_tasks(self, executable, task_ids):
+    def start_tasks(self, executable, task_ids, *args, **kwargs):
+        """
+        This process is starting processes to complete tasks with these
+        task ids. This is a way to say this process is starting batch
+        jobs or multiple processes on a node.
+
+        :param executable: The name of the executable we are starting.
+        :param task_ids: The job ids of the started jobs.
+        """
         self._log(logging.DEBUG, "ProvTasks {}".format(task_ids), args,
                   extra={"prov": {"executable": executable,
                                   "ids": task_ids, "kind": "start_tasks"}})
@@ -66,6 +99,9 @@ logging.setLoggerClass(ProvLogger)
 class ProvFilter:
     """
     This filter will accept only LogRecords with a "prov" keyword.
+    It looks like it should just be a single function, and it should,
+    and this is fixed in Python 3, but the class works
+    for backward-compatibility.
     """
     def filter(self, record):
         return hasattr(record, "prov")

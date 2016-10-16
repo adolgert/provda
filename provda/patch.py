@@ -4,7 +4,10 @@ Must be loaded after the modules it wraps. Chose this order because
 numpy will always be loaded before a random package like provda.
 Could add a loader, as in recipy, to hook things that are loaded after.
 """
-import builtins
+try:
+    import builtins
+except ImportError:
+    import __builtin__ as builtins
 import logging
 import sys
 import wrapt
@@ -16,7 +19,7 @@ logger = logging.getLogger("provda.patch")
 
 @wrapt.decorator
 def report_write(wrapped, instance, args, kwargs):
-    logger.create_file(args[0], "unknown")
+    logger.write_file(args[0], "unknown")
     return wrapped(*args, **kwargs)
 
 
@@ -88,6 +91,6 @@ def open(*args, **kwargs):
     if "r" in mode:
         logger.read_file(args[0], "unknown")
     if {"w", "x", "a", "+"} & set(mode):
-        logger.create_file(args[0], "unknown")
+        logger.write_file(args[0], "unknown")
 
     return builtins.open(*args, **kwargs)

@@ -25,6 +25,9 @@ The rules are these:
    because it is human-readable, so there are entities, activities, and agents.
    There is a library, called `prov <https://github.com/trungdong/prov>`_,
    that implements the W3C PROV model. That's what we use under the hood.
+   The `prov <https://github.com/trungdong/prov>`_ library defines provenance
+   in general. This library uses that to make a process-level set
+   of assumptions.
 
 2. Every entity, activity, or agent has a unique identifier (id) constructed
    from two pieces, a domain and a name. The domain may be an application

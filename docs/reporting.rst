@@ -29,6 +29,9 @@ That's enough to record the file opening. This logging method doesn't
 make recording automatic. There is another module that can automate
 the process by patching common libraries.
 
+.. autoclass:: provda.logprov.ProvLogger
+   :members:
+
 The second part of the process is deciding where to send the messages.
 Here is a program which uses logstash to record information.::
 

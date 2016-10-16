@@ -12,7 +12,7 @@ import provda.handler
 
 namespaces = {
     "is": "https://healtdata.org/instances",
-    "person": "https://healthdata.org/people",
+    "people": "https://healthdata.org/people",
     "code": "https://healthdata.org/code",
     "doc": "https://healthdata.org/document"
 }

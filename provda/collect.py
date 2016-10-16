@@ -30,7 +30,7 @@ def who_ran_this_process():
     p = pwd.getpwuid(os.getuid())
     user = {"unk:fullname": p.pw_gecos,
             "unk:homedir": p.pw_dir}
-    return "person:"+getpass.getuser(), user
+    return "people:"+getpass.getuser(), user
 
 
 def this_script():
