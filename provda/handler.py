@@ -34,6 +34,7 @@ def send_tcp(record, host, port, timeout=10):
     `json <https://github.com/logstash-plugins/logstash-codec-json>_` or
     `json lines
     <https://github.com/logstash-plugins/logstash-codec-json_lines>_`.
+    This one works with `json_lines`. It won't work with the `json` filter.
 
     :param record: A logger record.
     :param host: Hostname of logstash.
@@ -51,7 +52,6 @@ def send_tcp(record, host, port, timeout=10):
     transmittable = ["agent", "entity", "activity", "used",
                      "wasAssociatedWith", "wasGeneratedBy"]
     document_id = list(pfields["activity"].keys())[0]
-    simple_fields = [str, float, int, bool]
     logger.debug("Not transmitting {}".format(
         set(pfields.keys())-set(transmittable)))
     total = 0
@@ -63,14 +63,7 @@ def send_tcp(record, host, port, timeout=10):
                 stamp = datetime.datetime.now().isoformat()
                 fields = dict()
                 for name, val in ifields.items():
-                    if any(isinstance(val, s) for s in simple_fields):
-                        if isinstance(val, str):
-                            print("string looks like :{}:".format(val))
-                        fields[name] = val
-                    else:
-                        print("jsonify type {} val {}".format(
-                            type(val), val))
-                        fields[name] = json.dumps(val)
+                    fields[name] = val
 
                 record = json.dumps(
                     {'@message': 'create_file3',
