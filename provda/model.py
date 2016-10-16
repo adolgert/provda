@@ -41,7 +41,13 @@ class ProcessDocument:
             namespaces = namespaces.items()
         for short, long in namespaces:
             self._document.add_namespace(short, long)
-        self._document.add_namespace("unk", "http://example.com/unknown")
+        default_namespaces = {
+            "unk": "http://example.com/unknown",
+            "foaf": "http://xmlns.com/foaf/0.1/",
+            "prov": "http://www.w3.org/ns/prov#",
+            "dct": "http://purl.org/dc/terms/"
+        }
+        self._document.add_namespace("unk", )
 
         script_id, script_traits = collect.this_script()
         script_entity = self._document.entity(
@@ -66,7 +72,7 @@ class ProcessDocument:
     def handle(self, record):
         print("record.prov {}".format(record.prov))
         p = record.prov
-        if p["kind"] == "create_file":
+        if p["kind"] == "write_file":
             file_id = self._document.entity("doc:"+p["path"])
             file_id.wasGeneratedBy(self.process)
         elif p["kind"] == "read_file":
@@ -80,6 +86,14 @@ class ProcessDocument:
             id = "{}/{}/{}".format(p["database"], p["schema"], p["table"])
             table_id = self._document.entity("doc:" + id)
             self.process.used(table_id)
+        elif p["kind"] == "start_tasks":
+            id = "processcollection"
+            subprocesses = self._document.collection(id)
+            subprocesses.wasStartedBy(self.process)
+            for task in record["ids"]:
+                sub_proc = self._document.entity("doc:"+str(task),
+                                                 {"task_id": task})
+                self._document.membership(subprocesses, sub_proc)
         else:
             raise RuntimeError("Unknown type of provenance record {}".format(
                 p["kind"]))

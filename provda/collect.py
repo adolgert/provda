@@ -1,5 +1,14 @@
 """
 This module is responsible for collecting provenance information.
+These use a lot of default namespaces:
+
+            "unk": "http://example.com/unknown",
+            "foaf": "http://xmlns.com/foaf/0.1/",
+            "prov": "http://www.w3.org/ns/prov#",
+            "dct": "http://purl.org/dc/terms/"
+
+Take a look here: https://www.w3.org/TR/prov-dc/,
+http://xmlns.com/foaf/spec/.
 """
 import getpass
 import os
@@ -74,6 +83,8 @@ def this_process():
         "unk:interpreter": sys.version.split('\n')[0],
         "unk:date": rfc3339(time.time()),
     }
+    if "SGE_JOB_ID" in os.environ:
+        me["unk:sge_job_id"] = os.environ["SGE_JOB_ID"]
     return me
 
 

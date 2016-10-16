@@ -16,6 +16,9 @@ class ProvLogger(logging.Logger):
         super().__init__(name, level)
 
     def create_file(self, file_path, role, *args, **kwargs):
+        write_file(file_path, role, *args, **kwargs)
+
+    def write_file(self, file_path, role, *args, **kwargs):
         """
         Messages created by create_file have a dictionary of extra
         arguments in their resulting LogRecord, including record.prov=True
@@ -26,7 +29,7 @@ class ProvLogger(logging.Logger):
         :param kwargs: and extra keyword args.
         """
         # Use _log because self.log can exclude msg based on level.
-        kw = {"path": file_path, "kind": "create_file", "role": role}
+        kw = {"path": file_path, "kind": "write_file", "role": role}
         kw.update(kwargs)
         self._log(logging.DEBUG, "ProvWrite".format(file_path), args,
                   extra={"prov": kw})
@@ -50,6 +53,11 @@ class ProvLogger(logging.Logger):
         kw.update(kwargs)
         self._log(logging.DEBUG, "ProvRead {}".format(kw), args,
                   extra={"prov": kw})
+
+    def start_tasks(self, executable, task_ids):
+        self._log(logging.DEBUG, "ProvTasks {}".format(task_ids), args,
+                  extra={"prov": {"executable": executable,
+                                  "ids": task_ids, "kind": "start_tasks"}})
 
 
 logging.setLoggerClass(ProvLogger)
