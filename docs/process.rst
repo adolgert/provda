@@ -41,11 +41,18 @@ because it conforms to W3C-PROV.
 Process-level Provenance Document
 ---------------------------------
 
+This subsection is a specification for what a tool reading
+process-level provenance expects to find.
 It might help to look at the
 `W3C Prov Primer <https://www.w3.org/TR/prov-primer/>`_.
 A provenance document is the Python prov library's term for
-the root of a Bundle of Records. We will walk through
-choices to represent the entities and relations for process-level provenance.
+the root of a Bundle of Records.
+
+Attributes that are part of the PROV standard are
+marked with a dagger (ǂ). Attributes that are optional
+for records but should be filled in eventually are marked
+with an asterisk (*). For example, the end time of an activity
+may not be known.
 
 Default Namespaces
 ^^^^^^^^^^^^^^^^^^
@@ -56,6 +63,14 @@ which are specified during initialization.
  - `people` This the namespace for individuals, which here are usernames.
  - `doc` These are files or tables.
  - `code` This refers to code, probably in a repository.
+
+A couple of additional namespaces will be assumed.
+
+ - `foaf` Friend of a friend. http://xmlns.com/foaf/0.1/
+ - `dct` The Dublin core. http://purl.org/dc/terms/
+ - `prov` The W3C PROV namespace. http://www.w3.org/ns/prov#
+ - `unk` A namespace to use when you're confused about
+   which one to use. http://example.com/unknown
 
 You would set these according to your organization. For instance,::
 
@@ -76,10 +91,13 @@ program on a computer. It is an Entity. When a process runs, it gives
 itself a unique name using the `is` namespace and a UUID.
 A process instance must have:
 
- - A Unix process id, or pid, as in os.getpid().
- - A Unix parent process id, or ppid.
+ - *id* ǂ a unique identifier in the `is` namespace. A UUID works.
+ - *startTime* ǂ* Start time of the activity.
+ - *endTime* ǂ* End time of the activity.
+ - *prov:Type* ǂ This is an attribute with the value `prov:SoftwareAgent`.
+ - *unk:pid* * A Unix process id, or pid, as in os.getpid().
+ - *unk:ppid* * A Unix parent process id, or ppid.
  - Environment variables.
- - A time duration, which may be added at the end of the process.
 
 If another process refers to a process instance, it may refer to it
 anonymously, as in, "I started three hundred processes, with the property
@@ -94,11 +112,27 @@ git repository. It has a version, however, which is the
 git remote called "origin" and the hash of the branch that made it.
 The process Used the script source.
 
+ - *id* ǂ The object hash of the script in Git, or its full path if not in Git.
+ - *prov:type* ǂ The name of the script relative to its repository root.
+ - *unk:realPath* * The path to the script.
+ - *unk:version_remote* * The Git remote, if it exists.
+ - *unk:version_branch* * The Git branch, if it exists.
+ - *unk:version_branch_hash* The hash of the Git branch, if it exists.
+
+We could relate the running instance of the script to a collection
+of entities that represent libraries, operating system, and
+the script itself. Consider this a useful start.
+
 User
 ^^^^
 The unix or Windows username of the account under which
 the script is running is the User entity. It's in the `people`
 namespace. The process `wasAssociatedWith` the user.
+This is a PROV Agent.
+
+ - *id* ǂ A username in the `people` namespace. Should be the university id.
+ - *prov:type* ǂ Equal to `prov:Person`
+
 
 File
 ^^^^
@@ -115,18 +149,45 @@ Each file also records a role for the file which records what
 role this file plays for this process. The role could just
 be the kind of data in the file (a model entity in statistics models).
 
+ - *id* ǂ In the `doc` namespace, it's the logical file name.
+ - *prov:type* ǂ This should be "document".
+ - *unk:role* * This is the model entity for our computation.
+
+
 Database Table
 ^^^^^^^^^^^^^^
 These are treated like files, except that the ID is
 the database host, schema, and table name. As for files,
 a role is added.
 
+ - *id* ǂ In the `doc` namespace, it's database/schema/table.
+ - *prov:type* ǂ This should be "document".
+ - *unk:database* * The hostname.
+ - *unk:schema* * The schema.
+ - *unk:table* * The table.
+ - *unk:role* * This is the model entity for our computation.
+
 Collection of Processes
 ^^^^^^^^^^^^^^^^^^^^^^^
 A Collection is a PROV Entity which contains other entities.
 This particular collection contains Entities which represent
 batch job tasks, each named by its batch job id. Then the
-current process entity started these.
+current process entity started these. This is a collection.
+
+ - *id* ǂ In the `is` namespace. We can name it with a UUID.
+ - *prov:type* ǂ Equal to "prov:collection".
+ - *unk:role* * This is the name of the computational stage.
+
+Each process collection contains multiple activities which
+are
+
+ - *id* ǂ In the `is` namespace, but it's either an SGE job ID
+   or a process ID. The SGE job ID may be a job task ID, as in
+   "327.4".
+
+These IDs aren't unique, but they are unique within the document
+and can be fixed to match the UUIDs of the tasks that ran later.
+
 
 
 Process-level Provenance as Individual Records
