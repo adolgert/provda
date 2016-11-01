@@ -9,7 +9,7 @@ from sample_cfg import param
 
 
 logger = logging.getLogger("provda.tests.sample")
-#param = provda.get_parameters("provda.tests.sample")
+# param = provda.get_parameters("provda.tests.sample")
 
 
 def transform_files(cds):
@@ -22,7 +22,6 @@ def transform_files(cds):
     print("memory limit {} is untracked".format(param["memlimit"]))
     print(param["list_of_stuff"])
     assert len(param["list_of_stuff"]) == 3
-
 
 
 if __name__ == "__main__":

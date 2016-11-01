@@ -71,13 +71,15 @@ class ProcessDocument:
         return hasattr(record, "prov")
 
     def handle(self, record):
-        print("record.prov {}".format(record.prov))
+        if not hasattr(record, "prov"):
+            print("Where is the prov? {}".format(record))
+            raise Exception("Every record at this point should be filtered.")
         p = record.prov
         if p["kind"] == "create_file":
-            file_id = self._document.entity("doc:"+p["path"])
+            file_id = self._document.entity("doc:"+str(p["path"]))
             file_id.wasGeneratedBy(self.process)
         elif p["kind"] == "read_file":
-            file_id = self._document.entity("doc:"+p["path"])
+            file_id = self._document.entity("doc:"+str(p["path"]))
             self.process.used(file_id)
         elif p["kind"] == "write_table":
             id = "{}/{}/{}".format(p["database"], p["schema"], p["table"])

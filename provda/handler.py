@@ -1,3 +1,4 @@
+from collections import Mapping
 import datetime
 import json
 import logging
@@ -49,33 +50,30 @@ def send_tcp(record, host, port, timeout=10):
     pfields = json.loads(record)
     logger.debug(json.dumps(
         pfields, sort_keys=True, indent=4, separators=(',', ': ')))
-    transmittable = ["agent", "entity", "activity", "used",
-                     "wasAssociatedWith", "wasGeneratedBy"]
     document_id = list(pfields["activity"].keys())[0]
-    logger.debug("Not transmitting {}".format(
-        set(pfields.keys())-set(transmittable)))
     total = 0
-    for kind in transmittable:
-        if kind in pfields:
-            for instance in pfields[kind].keys():
-                ifields = pfields[kind][instance]
-                logger.debug("ifields {}".format(ifields))
-                stamp = datetime.datetime.now().isoformat()
-                fields = dict()
-                for name, val in ifields.items():
-                    fields[name] = val
-
-                record = json.dumps(
-                    {'@message': 'create_file3',
-                     '@source_host': "withme",
-                     '@version': 1,
-                     'prov': kind,
-                     'document': document_id,
-                     'instance': instance,
-                     '@timestamp': stamp,
-                     "@fields": fields})
-                print("final json {}".format(record))
-                s.sendall(str.encode(record, encoding="utf-8") + b'\n')
-                total = total + 1
+    for kind in pfields.keys():
+        for instance in pfields[kind].keys():
+            fields = dict()
+            if isinstance(pfields[kind], Mapping):
+                fields.update(pfields[kind])
+            elif hasattr(pfields[kind], "__getitem__"):
+                logger.error("It's a list? {}".format(pfields[kind]))
+                raise Exception("Passed a list in json")
+            else:
+                raise Exception("No fields")
+            stamp = datetime.datetime.now().isoformat()
+            record = json.dumps(
+                {'@message': 'create_file3',
+                 '@source_host': "withme",
+                 '@version': 1,
+                 'prov': kind,
+                 'document': document_id,
+                 'instance': instance,
+                 '@timestamp': stamp,
+                 "@fields": fields})
+            print("final json {}".format(record))
+            s.sendall(str.encode(record, encoding="utf-8") + b'\n')
+            total = total + 1
     s.close()
     logger.debug("sent {} objects".format(total))
