@@ -38,6 +38,7 @@ are summarized here.
 #. What person and program wrote this particular file?
 #. Did the program that wrote this file have the bug-fix?
 #. Are there newer versions of this calculation anywhere?
+#. Someone ran a calculation, and I want to add a description later.
 
 There are some functional requirements.
 
@@ -86,6 +87,9 @@ Questions from this use case:
    Is there a place to run tests and record the settings
    needed for tests?
 
+.. image:: provda_stages.*
+   :width: 300px
+   :alt: A stage of computation is a fuzzy idea determined by when a person starts a process and when output files contain longer-lived items.
 
 ------
 Design
@@ -107,7 +111,11 @@ Design
    for understanding whether they are useful.
 #. Often all datasets older than the more recent are entirely deletable.
 
-Let's look at sample queries
+What's our mental model for computations at this user level?
+Tags, datae, computational stage can be several processes.
+Files can be directories of directories.
+
+Let's look at sample queries.
 
 
 
@@ -126,6 +134,10 @@ System Requirements
 -------------
 System Design
 -------------
+
+.. image:: provda_architecture.*
+   :width: 300px
+   :alt: The script uses the provda library which sends to logstash which sends to ElasticSearch which is read by the search function.
 
 Subcomponents are
 
