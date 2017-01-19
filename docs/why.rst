@@ -2,12 +2,38 @@
 Why This Library?
 =================
 
+The Problem
+-----------
+
+1. We don't know whether the files used to run each stage were consistent.
+
+2. We don't know what files can be deleted or are archival.
+
+3. We don't know which files are used by other groups, which leads
+   other groups to create personal caches of input files copied from
+   other teams.
+
+Current In-house Solutions
+--------------------------
+
+1. Assiduous error-checking, famously last-minute by PBFs.
+
+2. Track inputs in per-computation databases.
+
+3. Associate database entries with stages of computation.
+
+This last solution is effective where it's used. It requires
+setting up a database table that makes sense. Our goal is to
+provide a provenance solution that works without that kind of setup.
+
+Current General Solutions
+-------------------------
+
 There are several academic provenance systems, but none of them are in common
 use. I conclude that we don't know how to do this yet in general, even though
 we know many of the tools and techniques. This library compiles tools
-according to a practical, yet principled, set of techniques, so that an
-individual organization (read mine) can enact the kind of provenance recording
-they (we) need.
+according to a practical, yet principled, set of techniques, so that IHME
+can enact the kind of provenance recording we need.
 
 The practical, yet principled, approach comes from `Margo Seltzer's talk
 at TAPP 2012 <https://www.usenix.org/conference/tapp12/workshop-program/presentation/macko>`_

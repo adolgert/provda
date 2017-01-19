@@ -49,7 +49,7 @@ A provenance document is the Python prov library's term for
 the root of a Bundle of Records.
 
 Attributes that are part of the PROV standard are
-marked with a dagger (ǂ). Attributes that are optional
+marked with a plus (+). Attributes that are optional
 for records but should be filled in eventually are marked
 with an asterisk (*). For example, the end time of an activity
 may not be known.
@@ -91,10 +91,10 @@ program on a computer. It is an Entity. When a process runs, it gives
 itself a unique name using the `is` namespace and a UUID.
 A process instance must have:
 
- - *id* ǂ a unique identifier in the `is` namespace. A UUID works.
- - *startTime* ǂ* Start time of the activity.
- - *endTime* ǂ* End time of the activity.
- - *prov:Type* ǂ This is an attribute with the value `prov:SoftwareAgent`.
+ - *id* + a unique identifier in the `is` namespace. A UUID works.
+ - *startTime* +* Start time of the activity.
+ - *endTime* +* End time of the activity.
+ - *prov:Type* + This is an attribute with the value `prov:SoftwareAgent`.
  - *unk:pid* * A Unix process id, or pid, as in os.getpid().
  - *unk:ppid* * A Unix parent process id, or ppid.
  - Environment variables.
@@ -112,8 +112,8 @@ git repository. It has a version, however, which is the
 git remote called "origin" and the hash of the branch that made it.
 The process Used the script source.
 
- - *id* ǂ The object hash of the script in Git, or its full path if not in Git.
- - *prov:type* ǂ The name of the script relative to its repository root.
+ - *id* + The object hash of the script in Git, or its full path if not in Git.
+ - *prov:type* + The name of the script relative to its repository root.
  - *unk:realPath* * The path to the script.
  - *unk:version_remote* * The Git remote, if it exists.
  - *unk:version_branch* * The Git branch, if it exists.
@@ -130,8 +130,8 @@ the script is running is the User entity. It's in the `people`
 namespace. The process `wasAssociatedWith` the user.
 This is a PROV Agent.
 
- - *id* ǂ A username in the `people` namespace. Should be the university id.
- - *prov:type* ǂ Equal to `prov:Person`
+ - *id* + A username in the `people` namespace. Should be the university id.
+ - *prov:type* + Equal to `prov:Person`
 
 
 File
@@ -149,8 +149,8 @@ Each file also records a role for the file which records what
 role this file plays for this process. The role could just
 be the kind of data in the file (a model entity in statistics models).
 
- - *id* ǂ In the `doc` namespace, it's the logical file name.
- - *prov:type* ǂ This should be "document".
+ - *id* + In the `doc` namespace, it's the logical file name.
+ - *prov:type* + This should be "document".
  - *unk:role* * This is the model entity for our computation.
 
 
@@ -160,8 +160,8 @@ These are treated like files, except that the ID is
 the database host, schema, and table name. As for files,
 a role is added.
 
- - *id* ǂ In the `doc` namespace, it's database/schema/table.
- - *prov:type* ǂ This should be "document".
+ - *id* + In the `doc` namespace, it's database/schema/table.
+ - *prov:type* + This should be "document".
  - *unk:database* * The hostname.
  - *unk:schema* * The schema.
  - *unk:table* * The table.
@@ -174,14 +174,14 @@ This particular collection contains Entities which represent
 batch job tasks, each named by its batch job id. Then the
 current process entity started these. This is a collection.
 
- - *id* ǂ In the `is` namespace. We can name it with a UUID.
- - *prov:type* ǂ Equal to "prov:collection".
+ - *id* + In the `is` namespace. We can name it with a UUID.
+ - *prov:type* + Equal to "prov:collection".
  - *unk:role* * This is the name of the computational stage.
 
 Each process collection contains multiple activities which
 are
 
- - *id* ǂ In the `is` namespace, but it's either an SGE job ID
+ - *id* + In the `is` namespace, but it's either an SGE job ID
    or a process ID. The SGE job ID may be a job task ID, as in
    "327.4".
 
