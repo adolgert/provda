@@ -2,32 +2,6 @@
 Why This Library?
 =================
 
-The Problem
------------
-
-1. We don't know whether the files used to run each stage were consistent.
-
-2. We don't know what files can be deleted or are archival.
-
-3. We don't know which files are used by other groups, which leads
-   other groups to create personal caches of input files copied from
-   other teams.
-
-Current In-house Solutions
---------------------------
-
-1. Assiduous error-checking, famously last-minute by PBFs.
-
-2. Track inputs in per-computation databases.
-
-3. Associate database entries with stages of computation.
-
-This last solution is effective where it's used. It requires
-setting up a database table that makes sense. Our goal is to
-provide a provenance solution that works without that kind of setup.
-
-Current General Solutions
--------------------------
 
 There are several academic provenance systems, but none of them are in common
 use. I conclude that we don't know how to do this yet in general, even though
@@ -76,6 +50,10 @@ PROV-N provides this cute little language that looks like::
 The prov library will serialize and deserialize to both
 PROV-N and JSON formats. We can either send those to a provenance
 store or embed them in HDF or PDF files.
+
+.. image:: ProvdaComponents.*
+   :width: 300px
+   :alt: All the parts of this provenance library.
 
 Where to go for more provenance
 -------------------------------

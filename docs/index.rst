@@ -35,9 +35,7 @@ Contents:
    tutorial
    reporting
    annotation
-   process
-   intro
-   usecases
+   development
 
 
 Indices and tables
