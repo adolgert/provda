@@ -91,12 +91,16 @@ def log_one(name, tag):
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
-    parser = argparse.ArgumentParser(description="make fake data")
+    parser = argparse.ArgumentParser(description="""
+Makes fake data. Start logstash. Then call this as
+
+python make_history.py --start 243 --tag one_time
+""")
     parser.add_argument("--tag", action="store", metavar="tag",
                         help="Some tag, because we tag runs.")
     parser.add_argument("--child", action="store", metavar="child")
     parser.add_argument("--start", action="store", metavar="start",
-                        help="The first job_id")
+                        help="The first job_id", type=int)
     args = parser.parse_args()
 
     if args.child:
