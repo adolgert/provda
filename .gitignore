@@ -3,3 +3,4 @@ build
 dist
 provda.egg-info
 *.pyc
+.cache
